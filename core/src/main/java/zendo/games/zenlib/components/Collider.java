@@ -76,6 +76,11 @@ public class Collider extends Component {
         this.rect = rect;
     }
 
+    public Grid getGrid() {
+        assert (shape == Shape.grid) : "Collider is not a Grid";
+        return grid;
+    }
+
     public boolean getCell(int x, int y) {
         assert (shape == Shape.grid) : "Collider is not a Grid";
         assert (x >= 0 && y >= 0 && x < grid.columns && y < grid.rows) : "Cell is out of bounds";

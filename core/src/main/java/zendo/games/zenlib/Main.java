@@ -136,12 +136,27 @@ public class Main extends ApplicationAdapter {
 
         world.update(dt);
 
+        // keep player in bounds
+        var solids = world.first(Tilemap.class).entity().get(Collider.class).getGrid();
+        var bounds = RectI.at(0, 0, solids.columns * solids.tileSize, solids.rows * solids.tileSize);
+
         var player = world.first(Player.class);
+        player.entity().position.x = Calc.clampInt(player.entity().position.x, bounds.x, bounds.x + bounds.w);
+        player.entity().position.y = Calc.clampInt(player.entity().position.y, bounds.y, bounds.y + bounds.h);
+
+        // find camera targets to follow player
         // NOTE: this is a little silly because depending which way the player is moving ceiling/floor tracks quickly while the other doesn't
         var targetX = (player.get(Mover.class).speed.x > 0)
                 ? Calc.ceiling(Calc.approach(worldCamera.position.x, player.entity().position.x, 400 * dt))
                 : Calc.floor  (Calc.approach(worldCamera.position.x, player.entity().position.x, 400 * dt));
         var targetY = Calc.ceiling(Calc.approach(worldCamera.position.y, player.entity().position.y, 100 * dt));
+
+        // keep camera in bounds
+        var halfViewW = (int) worldCamera.viewportWidth / 2;
+        var halfViewH = (int) worldCamera.viewportHeight / 2;
+        targetX = Calc.clampInt((int) targetX, bounds.x + halfViewW, bounds.x + bounds.w - halfViewW);
+        targetY = Calc.clampInt((int) targetY, bounds.y + halfViewH, bounds.y + bounds.h - halfViewH);
+
         worldCamera.position.set(targetX, targetY, 0);
         worldCamera.update();
     }
