@@ -44,6 +44,21 @@ public class Mover extends Component {
     }
 
     @Override
+    public <T extends Component> void copyFrom(T other) {
+        super.copyFrom(other);
+        if (other instanceof Mover) {
+            var mover = (Mover) other;
+            this.remainder.set(mover.remainder);
+            this.speed.set(mover.remainder);
+            this.collider = mover.collider;
+            this.onHitX   = mover.onHitX;
+            this.onHitY   = mover.onHitY;
+            this.gravity  = mover.gravity;
+            this.friction = mover.friction;
+        }
+    }
+
+    @Override
     public void update(float dt) {
         // apply friction maybe
         if (friction > 0 && onGround()) {

@@ -42,4 +42,12 @@ public class Calc {
              : 0;
     }
 
+    public static int abs(int x) {
+        return (x < 0) ? -x : x;
+    }
+
+    public static float abs(float x) {
+        return (x < 0) ? -x : x;
+    }
+
 }

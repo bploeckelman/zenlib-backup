@@ -1,6 +1,7 @@
 package zendo.games.zenlib;
 
 import com.badlogic.gdx.Gdx;
+import zendo.games.zenlib.components.Animator;
 import zendo.games.zenlib.components.Collider;
 import zendo.games.zenlib.components.Mover;
 import zendo.games.zenlib.components.Player;
@@ -11,9 +12,11 @@ public class Factory {
         var entity = world.addEntity(position);
         entity.add(new Player(), Player.class);
 
-        // TODO: add animation
+        var anim = entity.add(new Animator("character"), Animator.class);
+        anim.play("idle");
+        anim.depth = -10;
 
-        var rect = RectI.at(-5, -5, 10, 10);
+        var rect = RectI.at(-4, 0, 8, 20);
         var hitbox = entity.add(Collider.makeRect(rect), Collider.class);
 
         var mover = entity.add(new Mover(), Mover.class);

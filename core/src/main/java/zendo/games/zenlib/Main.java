@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import zendo.games.zenlib.components.Collider;
-import zendo.games.zenlib.components.Player;
 
 public class Main extends ApplicationAdapter {
 
@@ -26,18 +25,16 @@ public class Main extends ApplicationAdapter {
     World world;
 
     Texture texture;
-    Texture characterTex;
 
     @Override
     public void create () {
+        Content.load();
+
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
 
         texture = new Texture("pixel.png");
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-        characterTex = new Texture("character.png");
-        characterTex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Config.framebuffer_width, Config.framebuffer_height, false);
         frameBufferTexture = frameBuffer.getColorBufferTexture();
@@ -73,6 +70,17 @@ public class Main extends ApplicationAdapter {
         renderFramebufferIntoWindow();
     }
 
+    @Override
+    public void dispose() {
+        texture.dispose();
+        frameBufferTexture.dispose();
+        frameBuffer.dispose();
+        batch.dispose();
+        Content.unload();
+    }
+
+    // ------------------------------------------------------------------------
+
     private void renderWorldIntoFramebuffer() {
         frameBufferMatrix.setToOrtho2D(0, 0, Config.framebuffer_width, Config.framebuffer_height);
 
@@ -88,7 +96,7 @@ public class Main extends ApplicationAdapter {
                 batch.draw(texture, 0, 0, Config.framebuffer_width, Config.framebuffer_height);
                 batch.setColor(Color.WHITE);
 
-                batch.draw(characterTex, 0, 0);
+                world.render(batch);
             }
             batch.end();
 
@@ -138,14 +146,6 @@ public class Main extends ApplicationAdapter {
             batch.draw(frameBufferRegion, 0, 0, Config.window_width, Config.window_height);
         }
         batch.end();
-    }
-
-    @Override
-    public void dispose() {
-        texture.dispose();
-        frameBufferTexture.dispose();
-        frameBuffer.dispose();
-        batch.dispose();
     }
 
 }

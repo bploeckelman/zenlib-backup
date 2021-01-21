@@ -9,6 +9,9 @@ public class Player extends Component {
 
     private static final float ground_accel = 500;
     private static final float friction = 800;
+    private static final float max_ground_speed = 60;
+
+    private int facing = 1;
 
     @Override
     public void update(float dt) {
@@ -20,16 +23,41 @@ public class Player extends Component {
             input = 1;
         }
 
+        // get components
+        var anim = entity().get(Animator.class);
+        var mover = entity().get(Mover.class);
+
+        // sprite
+        {
+            // stopped
+            if (input != 0) {
+                anim.play("run");
+            } else {
+                anim.play("idle");
+            }
+
+            // facing
+            anim.scale.x = Calc.abs(anim.scale.x) * facing;
+        }
+
         // horizontal movement
         {
-            var mover = entity().get(Mover.class);
-
             // acceleration
             mover.speed.x += input * ground_accel * dt;
+
+            // max speed
+            if (Calc.abs(mover.speed.x) > max_ground_speed) {
+                mover.speed.x = Calc.approach(mover.speed.x, Calc.sign(mover.speed.x) * max_ground_speed, 2000 * dt);
+            }
 
             // friction
             if (input == 0) {
                 mover.speed.x = Calc.approach(mover.speed.x, 0, friction * dt);
+            }
+
+            // facing direction
+            if (input != 0) {
+                facing = input;
             }
         }
     }
