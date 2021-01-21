@@ -10,14 +10,16 @@ public class Player extends Component {
     public static final float gravity = -450;
 
     private static final float ground_accel = 500;
+    private static final float ground_accel_run = 800;
     private static final float friction = 800;
     private static final float max_ground_speed = 100;
+    private static final float max_ground_speed_run = 200;
     private static final float jump_impulse = 130;
     private static final float jump_time = 0.18f;
 
     private int facing = 1;
-    boolean onGround = false;
     private float jumpTimer = 0;
+    private boolean onGround = false;
 
     @Override
     public void update(float dt) {
@@ -35,6 +37,11 @@ public class Player extends Component {
         boolean inputJumpHeld = false;
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             inputJumpHeld = true;
+        }
+
+        boolean inputRunHeld = false;
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            inputRunHeld = true;
         }
 
         // get components
@@ -79,11 +86,13 @@ public class Player extends Component {
         // horizontal movement
         {
             // acceleration
-            mover.speed.x += input * ground_accel * dt;
+            var accel = (inputRunHeld) ? ground_accel_run : ground_accel;
+            mover.speed.x += input * accel * dt;
 
             // max speed
-            if (Calc.abs(mover.speed.x) > max_ground_speed) {
-                mover.speed.x = Calc.approach(mover.speed.x, Calc.sign(mover.speed.x) * max_ground_speed, 2000 * dt);
+            var max = (inputRunHeld) ? max_ground_speed_run : max_ground_speed;
+            if (Calc.abs(mover.speed.x) > max) {
+                mover.speed.x = Calc.approach(mover.speed.x, Calc.sign(mover.speed.x) * max, 2000 * dt);
             }
 
             // friction
