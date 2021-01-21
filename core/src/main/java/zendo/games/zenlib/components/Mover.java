@@ -151,7 +151,7 @@ public class Mover extends Component {
     }
 
     public boolean onGround() {
-        return onGround(1);
+        return onGround(-1);
     }
 
     public boolean onGround(int dist) {

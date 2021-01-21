@@ -1,6 +1,5 @@
 package zendo.games.zenlib;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -36,6 +35,8 @@ public class Content {
             , "char-run-right_3.png"
             , "char-run-right_4.png"
             , "char-run-right_5.png"
+            , "char-jump-up_0.png"
+            , "char-jump-down_0.png"
             , "pixel.png"
     };
 
@@ -77,6 +78,12 @@ public class Content {
                 , new Sprite.Frame(new TextureRegion(textures.get(13)))
                 , new Sprite.Frame(new TextureRegion(textures.get(14)))
                 , new Sprite.Frame(new TextureRegion(textures.get(15)))
+        ));
+        sprite.animations.add(new Sprite.Anim("jump",
+                  new Sprite.Frame(new TextureRegion(textures.get(16)))
+        ));
+        sprite.animations.add(new Sprite.Anim("fall",
+                new Sprite.Frame(new TextureRegion(textures.get(17)))
         ));
 
         sprites.add(sprite);
