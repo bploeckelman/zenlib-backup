@@ -7,6 +7,8 @@ import zendo.games.zenlib.Component;
 
 public class Player extends Component {
 
+    public static final float gravity = -450;
+
     private static final float ground_accel = 500;
     private static final float friction = 800;
     private static final float max_ground_speed = 100;
@@ -21,13 +23,6 @@ public class Player extends Component {
             input = -1;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             input = 1;
-        }
-
-        int yInput = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            yInput = -1;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            yInput = 1;
         }
 
         // get components
@@ -69,20 +64,15 @@ public class Player extends Component {
         }
 
         // vertical movement
-        {
-            // acceleration
-            mover.speed.y += yInput * ground_accel * dt;
-
-            // max speed
-            if (Calc.abs(mover.speed.y) > max_ground_speed) {
-                mover.speed.y = Calc.approach(mover.speed.y, Calc.sign(mover.speed.y) * max_ground_speed, 2000 * dt);
-            }
-
-            // friction
-            if (yInput == 0) {
-                mover.speed.y = Calc.approach(mover.speed.y, 0, friction * dt);
-            }
-        }
+//        {
+//            // acceleration
+//            mover.speed.y += gravity * dt;
+//
+//            // max speed
+//            if (Calc.abs(mover.speed.y) > max_air_speed) {
+//                mover.speed.y = Calc.approach(mover.speed.y, Calc.sign(mover.speed.y) * max_air_speed, 2000 * dt);
+//            }
+//        }
     }
 
 }

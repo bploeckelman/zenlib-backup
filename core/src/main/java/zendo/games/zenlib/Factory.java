@@ -21,7 +21,7 @@ public class Factory {
 
         var mover = entity.add(new Mover(), Mover.class);
         mover.collider = hitbox;
-        mover.gravity = -450;
+        mover.gravity = Player.gravity;
         mover.onHitX = (self) -> Gdx.app.log("Mover", "hit x");
         mover.onHitY = (self) -> Gdx.app.log("Mover", "hit y");
 

@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.math.Matrix4;
 import zendo.games.zenlib.components.Collider;
 import zendo.games.zenlib.components.Mover;
@@ -55,13 +57,18 @@ public class Main extends ApplicationAdapter {
 
         world = new World();
 
+        // load tile map
+        var room = world.addEntity();
         var layer = (TiledMapTileLayer) Content.tiledMap.getLayers().get("collision");
-        int tileSize = 18;//layer.getTileWidth();
+
+        var tilemap = room.add(new Tilemap(), Tilemap.class);
+//        int tileSize = layer.getTileWidth();
+        int tileSize = 16;
         int columns = layer.getWidth();
         int rows = layer.getHeight();
-        var room = world.addEntity();
-        var tilemap = room.add(new Tilemap(), Tilemap.class);
         tilemap.init(tileSize, columns, rows);
+
+        // set collision solids and tile images
         var solids = room.add(Collider.makeGrid(tileSize, columns, rows), Collider.class);
         solids.mask = Mask.solid;
         for (int x = 0; x < columns; x++) {
@@ -73,7 +80,21 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-        Factory.player(world, Point.at(Config.framebuffer_width / 2, Config.framebuffer_height / 2));
+        // find player spawn position
+        var spawn = Point.at(0, 0);
+        var objectLayer = Content.tiledMap.getLayers().get("object");
+        for (var object : objectLayer.getObjects().getByType(TiledMapTileMapObject.class)) {
+            var type = object.getProperties().get("type");
+            if ("spawn".equals(type)) {
+                spawn.x = (int) (object.getX() / layer.getTileWidth())  * tileSize;
+                spawn.y = (int) (object.getY() / layer.getTileHeight()) * tileSize;
+            }
+        }
+
+        Factory.player(world, spawn);
+
+        worldCamera.position.set(spawn.x, spawn.y, 0);
+        worldCamera.update();
     }
 
     public void update() {
@@ -100,8 +121,8 @@ public class Main extends ApplicationAdapter {
         var player = world.first(Player.class);
         // NOTE: this is a little silly because depending which way the player is moving ceiling/floor tracks quickly while the other doesn't
         var targetX = (player.get(Mover.class).speed.x > 0)
-                ? Calc.ceiling(Calc.approach(worldCamera.position.x, player.entity().position.x, 100 * dt))
-                : Calc.floor  (Calc.approach(worldCamera.position.x, player.entity().position.x, 100 * dt));
+                ? Calc.ceiling(Calc.approach(worldCamera.position.x, player.entity().position.x, 400 * dt))
+                : Calc.floor  (Calc.approach(worldCamera.position.x, player.entity().position.x, 400 * dt));
         var targetY = Calc.ceiling(Calc.approach(worldCamera.position.y, player.entity().position.y, 100 * dt));
         worldCamera.position.set(targetX, targetY, 0);
         worldCamera.update();
