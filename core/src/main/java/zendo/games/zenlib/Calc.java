@@ -18,5 +18,28 @@ public class Calc {
         return MathUtils.ceil(value);
     }
 
+    public static float min(float a, float b) {
+        return (a < b) ? a : b;
+    }
+
+    public static float max(float a, float b) {
+        return (a > b) ? a : b;
+    }
+
+    public static float approach(float t, float target, float delta) {
+        return (t < target) ? min(t + delta, target) : max(t - delta, target);
+    }
+
+    public static int sign(int x) {
+        return (x < 0) ? -1
+             : (x > 0) ? 1
+             : 0;
+    }
+
+    public static float sign(float x) {
+        return (x < 0) ? -1
+             : (x > 0) ? 1
+             : 0;
+    }
 
 }

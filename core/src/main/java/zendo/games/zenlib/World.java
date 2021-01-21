@@ -187,13 +187,13 @@ public class World {
         }
     }
 
-    public void update() {
+    public void update(float dt) {
         for (int i = 0; i < Component.Types.count(); i++) {
             var component = componentsAlive[i].first;
             while (component != null) {
                 var next = component.next();
                 if (component.active && component.entity.active) {
-                    component.update();
+                    component.update(dt);
                 }
                 component = next;
             }

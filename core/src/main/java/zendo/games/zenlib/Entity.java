@@ -21,8 +21,8 @@ public class Entity extends ListNode<Entity> {
         this.position = Point.zero();
         this.world = null;
         this.components.clear();
-        this.active = false;
-        this.visible = false;
+        this.active = true;
+        this.visible = true;
     }
 
     public World world() {

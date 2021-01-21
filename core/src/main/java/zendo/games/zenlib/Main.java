@@ -9,25 +9,24 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
 import zendo.games.zenlib.components.Collider;
+import zendo.games.zenlib.components.Player;
 
 public class Main extends ApplicationAdapter {
 
     SpriteBatch batch;
     ShapeRenderer shapes;
+
     FrameBuffer frameBuffer;
     Texture frameBufferTexture;
     TextureRegion frameBufferRegion;
-    World world;
+    Matrix4 frameBufferMatrix;
 
     OrthographicCamera camera;
-    Vector2 screenCenter = new Vector2();
-    Vector2 bufferCenter = new Vector2();
-    Matrix4 transform = new Matrix4();
+    World world;
 
-    public Texture texture;
-    public Texture characterTex;
+    Texture texture;
+    Texture characterTex;
 
     @Override
     public void create () {
@@ -45,15 +44,15 @@ public class Main extends ApplicationAdapter {
         frameBufferTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         frameBufferRegion = new TextureRegion(frameBufferTexture);
         frameBufferRegion.flip(false, true);
+        frameBufferMatrix = new Matrix4();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Config.window_width, Config.window_height);
         camera.update();
 
         world = new World();
-        var entity = world.addEntity(Point.at(Config.framebuffer_width / 2, Config.framebuffer_height / 2));
-        var rect = RectI.at(-5, -5, 10, 10);
-        entity.add(Collider.makeRect(rect), Collider.class);
+
+        Factory.player(world, Point.at(Config.framebuffer_width / 2, Config.framebuffer_height / 2));
     }
 
     public void update() {
@@ -62,10 +61,9 @@ public class Main extends ApplicationAdapter {
         }
 
         float dt = Gdx.graphics.getDeltaTime();
-        // ...
-    }
 
-    Matrix4 frameBufferMatrix = new Matrix4();
+        world.update(dt);
+    }
 
     @Override
     public void render() {

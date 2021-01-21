@@ -23,8 +23,8 @@ public abstract class Component extends ListNode<Component> {
         this.entity = null;
         this.type = 0;
         this.depth = 0;
-        this.active = false;
-        this.visible = false;
+        this.active = true;
+        this.visible = true;
     }
 
     public <T extends Component> void copyFrom(T other) {
@@ -63,7 +63,7 @@ public abstract class Component extends ListNode<Component> {
     }
 
     public void awake() {}
-    public void update() {}
+    public void update(float dt) {}
     public void render(SpriteBatch batch) {}
     public void render(ShapeRenderer shapes) {}
     public void destroyed() {}
