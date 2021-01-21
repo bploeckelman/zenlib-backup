@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="2020.12.18" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="64" tileheight="64" infinite="0" nextlayerid="5" nextobjectid="3">
+ <editorsettings>
+  <export target="test.tmx" format="tmx"/>
+ </editorsettings>
+ <tileset firstgid="1" name="spelunky_tiles_dirt" tilewidth="64" tileheight="64" tilecount="64" columns="8">
+  <image source="spelunky_tiles_dirt.png" width="512" height="512"/>
+ </tileset>
+ <objectgroup id="4" name="object">
+  <object id="1" name="spawn" type="spawn" gid="21" x="580" y="644" width="64" height="64"/>
+ </objectgroup>
+ <layer id="1" name="collision" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJytlMluwzAMRInebOti2Ze2uaTtpculG5Au//9dJQE+eCIgTeOUwMAwKQ0pcqStmd04ekfnGPMb/7eOO4kV8dVcWzL+6nhz3DseZH2s22aOR8eT/M/iu3Zs0hd7vxzfyX3puMrYTnL0WQP/cOzSP0iumuur1KrG3mqHbZJc9GGQWk81zhV9og9TcsK/xqJP9KYkJ/xrLOrR+Vys5MGiHs7XncllycH5yj/wqRbmM7nQXyf4TWPHDP2NguBES6daberiPsf/XzWob8EotQRH9G9j+xo/NiPuJzouUl8bY0boqH1H9H5qjBqJcYZO1r1LPuao2q3CM0iNz44X27/f7CGfvpP0pbdFK5Mtc/lwfNryps7NHvIwP85CDmY6pL8e6AW+vomjB7SCL2r8Ae/UGZc=
+  </data>
+ </layer>
+</map>

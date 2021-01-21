@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Matrix4;
 import zendo.games.zenlib.components.Collider;
+import zendo.games.zenlib.components.Tilemap;
 
 public class Main extends ApplicationAdapter {
 
@@ -49,22 +51,25 @@ public class Main extends ApplicationAdapter {
 
         world = new World();
 
-        Factory.player(world, Point.at(Config.framebuffer_width / 2, Config.framebuffer_height / 2));
-
-        int tileSize = 16;
-        int columns = 19;
-        int rows = 11;
+        var layer = (TiledMapTileLayer) Content.tiledMap.getLayers().get("collision");
+        int tileSize = 18;//layer.getTileWidth();
+        int columns = layer.getWidth();
+        int rows = layer.getHeight();
         var room = world.addEntity();
+        var tilemap = room.add(new Tilemap(), Tilemap.class);
+        tilemap.init(tileSize, columns, rows);
         var solids = room.add(Collider.makeGrid(tileSize, columns, rows), Collider.class);
         solids.mask = Mask.solid;
         for (int x = 0; x < columns; x++) {
             for (int y = 0; y < rows; y++) {
-                if (x == 0 || x == (columns - 1)
-                 || y == 0 || y == (rows - 1)) {
+                if (layer.getCell(x, y) != null) {
+                    tilemap.setCell(x, y, layer.getCell(x, y).getTile().getTextureRegion());
                     solids.setCell(x, y, true);
                 }
             }
         }
+
+        Factory.player(world, Point.at(Config.framebuffer_width / 2, Config.framebuffer_height / 2));
     }
 
     public void update() {

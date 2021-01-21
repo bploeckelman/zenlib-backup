@@ -1,8 +1,11 @@
 package zendo.games.zenlib;
 
+import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import zendo.games.zenlib.assets.Sprite;
 
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.List;
 public class Content {
 
     public static BitmapFont font;
+    public static TiledMap tiledMap;
 
     private static List<Texture> textures;
     private static List<Sprite> sprites;
@@ -37,6 +41,8 @@ public class Content {
 
     public static void load() {
         font = new BitmapFont();
+        tiledMap = new TmxMapLoader().load("maps/test.tmx");
+
         textures = new ArrayList<>();
         sprites = new ArrayList<>();
 
