@@ -2,6 +2,7 @@ package zendo.games.zenlib.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.Controllers;
 import zendo.games.zenlib.Calc;
 import zendo.games.zenlib.Component;
 
@@ -30,20 +31,32 @@ public class Player extends Component {
     private final InputState input = new InputState();
 
     private void updateInputState() {
+        var controllers = Controllers.getControllers();
+        var controller = controllers.isEmpty() ? null : controllers.get(0);
+
+        var controller_button_a    = (controller == null) ? 0 : controller.getMapping().buttonA;
+        var controller_button_r1   = (controller == null) ? 0 : controller.getMapping().buttonR1;
+        var controller_axis_left_x = (controller == null) ? 0 : controller.getMapping().axisLeftX;
+
+        var controller_dead_zone = 0.2f;
+        var controller_axis_left_x_value = (controller == null) ? 0 : controller.getAxis(controller_axis_left_x);
+        var controller_axis_left_x_in_dead_zone = (controller != null && Calc.abs(controller_axis_left_x_value) <= controller_dead_zone);
+
         // move direction
         input.move_dir = 0;
-        if      (Gdx.input.isKeyPressed(Input.Keys.LEFT))  input.move_dir = -1;
-        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) input.move_dir =  1;
+        if      (Gdx.input.isKeyPressed(Input.Keys.LEFT)  || (controller != null && !controller_axis_left_x_in_dead_zone && controller_axis_left_x_value < 0)) input.move_dir = -1;
+        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || (controller != null && !controller_axis_left_x_in_dead_zone && controller_axis_left_x_value > 0)) input.move_dir =  1;
 
         // jump input
         input.jump = false;
         input.jump_held = false;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) input.jump = true;
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE))     input.jump_held = true;
+        // TODO: need additional state var to get 'just pressed' for controller button
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || (controller != null && controller.getButton(controller_button_a))) input.jump = true;
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)     || (controller != null && controller.getButton(controller_button_a))) input.jump_held = true;
 
         // run input
         input.run_held = false;
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) input.run_held = true;
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || (controller != null && controller.getButton(controller_button_r1))) input.run_held = true;
     }
 
     @Override
