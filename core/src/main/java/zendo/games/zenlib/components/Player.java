@@ -9,7 +9,7 @@ public class Player extends Component {
 
     private static final float ground_accel = 500;
     private static final float friction = 800;
-    private static final float max_ground_speed = 60;
+    private static final float max_ground_speed = 100;
 
     private int facing = 1;
 
@@ -21,6 +21,13 @@ public class Player extends Component {
             input = -1;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             input = 1;
+        }
+
+        int yInput = 0;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            yInput = -1;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            yInput = 1;
         }
 
         // get components
@@ -58,6 +65,22 @@ public class Player extends Component {
             // facing direction
             if (input != 0) {
                 facing = input;
+            }
+        }
+
+        // vertical movement
+        {
+            // acceleration
+            mover.speed.y += yInput * ground_accel * dt;
+
+            // max speed
+            if (Calc.abs(mover.speed.y) > max_ground_speed) {
+                mover.speed.y = Calc.approach(mover.speed.y, Calc.sign(mover.speed.y) * max_ground_speed, 2000 * dt);
+            }
+
+            // friction
+            if (yInput == 0) {
+                mover.speed.y = Calc.approach(mover.speed.y, 0, friction * dt);
             }
         }
     }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import zendo.games.zenlib.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Collider extends Component {
@@ -16,7 +17,7 @@ public class Collider extends Component {
         public int columns;
         public int rows;
         public int tileSize;
-        public List<Boolean> cells;
+        public boolean[] cells;
     }
 
     public int mask = 0;
@@ -26,8 +27,8 @@ public class Collider extends Component {
     private Grid grid;
 
     public Collider() {
-        visible = false;
-        active = false;
+        visible = true;
+        active = true;
     }
 
     @Override
@@ -52,10 +53,12 @@ public class Collider extends Component {
     public static Collider makeGrid(int tileSize, int columns, int rows) {
         Collider collider = new Collider();
         collider.shape = Shape.grid;
+        collider.grid = new Grid();
         collider.grid.tileSize = tileSize;
         collider.grid.columns = columns;
         collider.grid.rows = rows;
-        collider.grid.cells = new ArrayList<>(columns * rows);
+        collider.grid.cells = new boolean[columns * rows];
+        Arrays.fill(collider.grid.cells, false);
         return collider;
     }
 
@@ -76,13 +79,13 @@ public class Collider extends Component {
     public boolean getCell(int x, int y) {
         assert (shape == Shape.grid) : "Collider is not a Grid";
         assert (x >= 0 && y >= 0 && x < grid.columns && y < grid.rows) : "Cell is out of bounds";
-        return grid.cells.get(x + y * grid.columns);
+        return grid.cells[x + y * grid.columns];
     }
 
     public void setCell(int x, int y, boolean value) {
         assert (shape == Shape.grid) : "Collider is not a Grid";
         assert (x >= 0 && y >= 0 && x < grid.columns && y < grid.rows) : "Cell is out of bounds";
-        grid.cells.set(x + y * grid.columns, value);
+        grid.cells[x + y * grid.columns] = value;
     }
 
     public void setCells(int x, int y, int w, int h, boolean value) {
@@ -154,7 +157,7 @@ public class Collider extends Component {
             else if (shape == Shape.grid) {
                 for (int x = 0; x < grid.columns; x++) {
                     for (int y = 0; y < grid.rows; y++) {
-                        if (!grid.cells.get(x + y * grid.columns)) continue;
+                        if (!grid.cells[x + y * grid.columns]) continue;
 
                         RectI rect = RectI.at(
                                 x * grid.tileSize + entity().position.x,
@@ -175,10 +178,14 @@ public class Collider extends Component {
         RectI ar = new RectI();
         ar.x = a.rect.x + a.entity().position.x + offset.x;
         ar.y = a.rect.y + a.entity().position.y + offset.y;
+        ar.w = a.rect.w;
+        ar.h = a.rect.h;
 
         RectI br = new RectI();
         br.x = b.rect.x + b.entity().position.x + offset.x;
         br.y = b.rect.y + b.entity().position.y + offset.y;
+        br.w = b.rect.w;
+        br.h = b.rect.h;
 
         return ar.overlaps(br);
     }
@@ -188,6 +195,8 @@ public class Collider extends Component {
         RectI rect = new RectI();
         rect.x = a.rect.x + a.entity().position.x + offset.x - b.entity().position.x;
         rect.y = a.rect.y + a.entity().position.y + offset.y - b.entity().position.y;
+        rect.w = a.rect.w;
+        rect.h = a.rect.h;
 
         // get the cells the rectangle overlaps
         int left   = Calc.clampInt((int) Calc.floor  (rect.x        / (float) b.grid.tileSize), 0, b.grid.columns);
@@ -198,7 +207,7 @@ public class Collider extends Component {
         // check each cell
         for (int x = left; x < right; x++) {
             for (int y = top; y < bottom; y++) {
-                if (b.grid.cells.get(x + y * b.grid.columns)) {
+                if (b.grid.cells[x + y * b.grid.columns]) {
                     return true;
                 }
             }

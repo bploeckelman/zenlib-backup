@@ -20,7 +20,7 @@ public class World {
             if (last != null) {
                 last.setNext(instance);
                 instance.setPrev(last);
-                instance.setNext(last);
+                instance.setNext(null);
                 last = instance;
             } else {
                 first = last = instance;

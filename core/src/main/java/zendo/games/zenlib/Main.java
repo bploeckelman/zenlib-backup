@@ -50,11 +50,30 @@ public class Main extends ApplicationAdapter {
         world = new World();
 
         Factory.player(world, Point.at(Config.framebuffer_width / 2, Config.framebuffer_height / 2));
+
+        int tileSize = 16;
+        int columns = 19;
+        int rows = 11;
+        var room = world.addEntity();
+        var solids = room.add(Collider.makeGrid(tileSize, columns, rows), Collider.class);
+        solids.mask = Mask.solid;
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                if (x == 0 || x == (columns - 1)
+                 || y == 0 || y == (rows - 1)) {
+                    solids.setCell(x, y, true);
+                }
+            }
+        }
     }
 
     public void update() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+            Debug.draw_colliders = !Debug.draw_colliders;
         }
 
         float dt = Gdx.graphics.getDeltaTime();
@@ -114,13 +133,15 @@ public class Main extends ApplicationAdapter {
                 shapes.setColor(Color.WHITE);
 
                 // colliders
-                shapes.setColor(Color.RED);
-                var collider = world.first(Collider.class);
-                while (collider != null) {
-                    collider.render(shapes);
-                    collider = (Collider) collider.next();
+                if (Debug.draw_colliders) {
+                    shapes.setColor(Color.RED);
+                    var collider = world.first(Collider.class);
+                    while (collider != null) {
+                        collider.render(shapes);
+                        collider = (Collider) collider.next();
+                    }
+                    shapes.setColor(Color.WHITE);
                 }
-                shapes.setColor(Color.WHITE);
 
                 // entities
                 shapes.setColor(Color.YELLOW);

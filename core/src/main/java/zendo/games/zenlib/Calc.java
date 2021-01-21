@@ -30,24 +30,24 @@ public class Calc {
         return (t < target) ? min(t + delta, target) : max(t - delta, target);
     }
 
-    public static int sign(int x) {
-        return (x < 0) ? -1
-             : (x > 0) ? 1
+    public static int sign(int val) {
+        return (val < 0) ? -1
+             : (val > 0) ? 1
              : 0;
     }
 
-    public static float sign(float x) {
-        return (x < 0) ? -1
-             : (x > 0) ? 1
+    public static float sign(float val) {
+        return (val < 0) ? -1
+             : (val > 0) ? 1
              : 0;
     }
 
-    public static int abs(int x) {
-        return (x < 0) ? -x : x;
+    public static int abs(int val) {
+        return (val < 0) ? -val : val;
     }
 
-    public static float abs(float x) {
-        return (x < 0) ? -x : x;
+    public static float abs(float val) {
+        return (val < 0) ? -val : val;
     }
 
 }
