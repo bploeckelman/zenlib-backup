@@ -117,6 +117,17 @@ public class Player extends Component {
                 jumpTimer = 0;
             }
         }
+
+        // gravity
+        if (!onGround) {
+            // make gravity more 'hovery' when in the air
+            float grav = gravity;
+            if (Calc.abs(mover.speed.y) < 20 && inputJumpHeld) {
+                grav *= 0.4f;
+            }
+
+            mover.speed.y += grav * dt;
+        }
     }
 
 }

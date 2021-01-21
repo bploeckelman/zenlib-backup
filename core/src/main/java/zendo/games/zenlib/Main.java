@@ -57,37 +57,55 @@ public class Main extends ApplicationAdapter {
 
         world = new World();
 
-        // load tile map
+        // load tile map entity and parse Tiled map
         var room = world.addEntity();
-        var layer = (TiledMapTileLayer) Content.tiledMap.getLayers().get("collision");
+
+        var collisionLayer = (TiledMapTileLayer) Content.tiledMap.getLayers().get("collision");
+        var tileSize = collisionLayer.getTileWidth();
+        var columns = collisionLayer.getWidth();
+        var rows = collisionLayer.getHeight();
 
         var tilemap = room.add(new Tilemap(), Tilemap.class);
-//        int tileSize = layer.getTileWidth();
-        int tileSize = 16;
-        int columns = layer.getWidth();
-        int rows = layer.getHeight();
         tilemap.init(tileSize, columns, rows);
 
-        // set collision solids and tile images
         var solids = room.add(Collider.makeGrid(tileSize, columns, rows), Collider.class);
         solids.mask = Mask.solid;
-        for (int x = 0; x < columns; x++) {
-            for (int y = 0; y < rows; y++) {
-                if (layer.getCell(x, y) != null) {
-                    tilemap.setCell(x, y, layer.getCell(x, y).getTile().getTextureRegion());
-                    solids.setCell(x, y, true);
+
+        var spawn = Point.at(0, 0);
+        for (var layer : Content.tiledMap.getLayers()) {
+            // parse tile layers
+            if (layer instanceof TiledMapTileLayer) {
+                var tileLayer = (TiledMapTileLayer) layer;
+                for (int x = 0; x < columns; x++) {
+                    for (int y = 0; y < rows; y++) {
+                        var cell = tileLayer.getCell(x, y);
+                        if (cell == null) continue;
+
+                        var isCollision = "collision".equals(layer.getName());
+                        var isBackground = "background".equals(layer.getName());
+
+                        if (isCollision) {
+                            solids.setCell(x, y, true);
+                        }
+
+                        if (isCollision || isBackground) {
+                            tilemap.setCell(x, y, cell.getTile().getTextureRegion());
+                        }
+                    }
                 }
             }
-        }
+            // parse objects layer
+            else if ("objects".equals(layer.getName())) {
+                var objects = layer.getObjects().getByType(TiledMapTileMapObject.class);
+                for (var object : objects) {
+                    var type = object.getProperties().get("type");
 
-        // find player spawn position
-        var spawn = Point.at(0, 0);
-        var objectLayer = Content.tiledMap.getLayers().get("object");
-        for (var object : objectLayer.getObjects().getByType(TiledMapTileMapObject.class)) {
-            var type = object.getProperties().get("type");
-            if ("spawn".equals(type)) {
-                spawn.x = (int) (object.getX() / layer.getTileWidth())  * tileSize;
-                spawn.y = (int) (object.getY() / layer.getTileHeight()) * tileSize;
+                    // parse player spawn position
+                    if ("spawn".equals(type)) {
+                        spawn.x = (int) (object.getX() / collisionLayer.getTileWidth())  * tileSize;
+                        spawn.y = (int) (object.getY() / collisionLayer.getTileHeight()) * tileSize;
+                    }
+                }
             }
         }
 

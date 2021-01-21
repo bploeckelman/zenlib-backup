@@ -42,7 +42,7 @@ public class Content {
 
     public static void load() {
         font = new BitmapFont();
-        tiledMap = new TmxMapLoader().load("maps/test.tmx");
+        tiledMap = new TmxMapLoader().load("maps/room_0x0.tmx");
 
         textures = new ArrayList<>();
         sprites = new ArrayList<>();

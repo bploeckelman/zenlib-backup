@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="2020.12.18" orientation="orthogonal" renderorder="right-down" width="50" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="4">
+ <tileset firstgid="1" name="prototype-basic-tiles" tilewidth="16" tileheight="16" tilecount="40" columns="4">
+  <image source="prototype-basic-tiles.png" width="64" height="160"/>
+ </tileset>
+ <tileset firstgid="41" name="prototype-interactive-elements" tilewidth="16" tileheight="16" tilecount="32" columns="4">
+  <image source="prototype-interactive-elements.png" width="64" height="128"/>
+ </tileset>
+ <objectgroup id="2" name="objects">
+  <object id="3" name="spawn" type="spawn" gid="41" x="16" y="240" width="16" height="16"/>
+ </objectgroup>
+ <layer id="1" name="collision" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYBzFo3gUj+JRPIpH8ZDGosMEj4JRMApQAScQC0IxuUARiFWAWA0LxieuRKF7kbEsA6K8golxkeshGgFktyO7lxCWY8DuZ3r6k1y3k4JFhrDbSYkvcjG13A4ABdgMgQ==
+  </data>
+ </layer>
+ <layer id="3" name="background" width="50" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztz7EJADAMBDFvk+w/oUsv8BATpPK6qwIAANjvhPprv3zcUGc01u4BYw==
+  </data>
+ </layer>
+</map>

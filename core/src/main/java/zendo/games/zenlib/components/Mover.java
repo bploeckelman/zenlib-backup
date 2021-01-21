@@ -66,7 +66,7 @@ public class Mover extends Component {
         }
 
         // apply gravity
-        if (gravity != 0 && (collider == null || !collider.check(Mask.solid, Point.at(0, 1)))) {
+        if (gravity != 0 && (collider == null || !collider.check(Mask.solid, Point.at(0, -1)))) {
             speed.y += gravity * dt;
         }
 
