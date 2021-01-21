@@ -21,28 +21,35 @@ public class Player extends Component {
     private float jumpTimer = 0;
     private boolean onGround = false;
 
+    private static class InputState {
+        int move_dir = 0;
+        boolean run_held = false;
+        boolean jump_held = false;
+        boolean jump = false;
+    }
+    private final InputState input = new InputState();
+
+    private void updateInputState() {
+        // move direction
+        input.move_dir = 0;
+        if      (Gdx.input.isKeyPressed(Input.Keys.LEFT))  input.move_dir = -1;
+        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) input.move_dir =  1;
+
+        // jump input
+        input.jump = false;
+        input.jump_held = false;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) input.jump = true;
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE))     input.jump_held = true;
+
+        // run input
+        input.run_held = false;
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) input.run_held = true;
+    }
+
     @Override
     public void update(float dt) {
         // get input
-        int input = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            input = -1;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            input = 1;
-        }
-        boolean inputJump = false;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            inputJump = true;
-        }
-        boolean inputJumpHeld = false;
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            inputJumpHeld = true;
-        }
-
-        boolean inputRunHeld = false;
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            inputRunHeld = true;
-        }
+        updateInputState();
 
         // get components
         var anim = entity().get(Animator.class);
@@ -55,7 +62,7 @@ public class Player extends Component {
         {
             // stopped
             if (onGround) {
-                if (input != 0) {
+                if (input.move_dir != 0) {
                     anim.play("run");
                 } else {
                     anim.play("idle");
@@ -86,29 +93,29 @@ public class Player extends Component {
         // horizontal movement
         {
             // acceleration
-            var accel = (inputRunHeld) ? ground_accel_run : ground_accel;
-            mover.speed.x += input * accel * dt;
+            var accel = (input.run_held) ? ground_accel_run : ground_accel;
+            mover.speed.x += input.move_dir * accel * dt;
 
             // max speed
-            var max = (inputRunHeld) ? max_ground_speed_run : max_ground_speed;
+            var max = (input.run_held) ? max_ground_speed_run : max_ground_speed;
             if (Calc.abs(mover.speed.x) > max) {
                 mover.speed.x = Calc.approach(mover.speed.x, Calc.sign(mover.speed.x) * max, 2000 * dt);
             }
 
             // friction
-            if (input == 0 && onGround) {
+            if (input.move_dir == 0 && onGround) {
                 mover.speed.x = Calc.approach(mover.speed.x, 0, friction * dt);
             }
 
             // facing direction
-            if (input != 0) {
-                facing = input;
+            if (input.move_dir != 0) {
+                facing = input.move_dir;
             }
         }
 
         // trigger a jump
         {
-            if (inputJump && onGround) {
+            if (input.jump && onGround) {
                 // squoosh on jomp
                 anim.scale.set(facing * 0.65f, 1.4f);
 
@@ -122,7 +129,7 @@ public class Player extends Component {
 
             mover.speed.y = jump_impulse;
 
-            if (!inputJumpHeld) {
+            if (!input.jump_held) {
                 jumpTimer = 0;
             }
         }
@@ -131,7 +138,7 @@ public class Player extends Component {
         if (!onGround) {
             // make gravity more 'hovery' when in the air
             float grav = gravity;
-            if (Calc.abs(mover.speed.y) < 20 && inputJumpHeld) {
+            if (Calc.abs(mover.speed.y) < 20 && input.jump_held) {
                 grav *= 0.4f;
             }
 
