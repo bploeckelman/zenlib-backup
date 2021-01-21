@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Matrix4;
 import zendo.games.zenlib.components.Collider;
+import zendo.games.zenlib.components.Mover;
+import zendo.games.zenlib.components.Player;
 import zendo.games.zenlib.components.Tilemap;
 
 public class Main extends ApplicationAdapter {
@@ -21,12 +23,13 @@ public class Main extends ApplicationAdapter {
     FrameBuffer frameBuffer;
     Texture frameBufferTexture;
     TextureRegion frameBufferRegion;
-    Matrix4 frameBufferMatrix;
 
-    OrthographicCamera camera;
+    Matrix4 screenProjection;
+
+    OrthographicCamera worldCamera;
     World world;
 
-    Texture texture;
+    Texture pixel;
 
     @Override
     public void create () {
@@ -35,19 +38,20 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
 
-        texture = new Texture("pixel.png");
-        texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        pixel = new Texture("pixel.png");
+        pixel.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Config.framebuffer_width, Config.framebuffer_height, false);
         frameBufferTexture = frameBuffer.getColorBufferTexture();
         frameBufferTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         frameBufferRegion = new TextureRegion(frameBufferTexture);
         frameBufferRegion.flip(false, true);
-        frameBufferMatrix = new Matrix4();
 
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Config.window_width, Config.window_height);
-        camera.update();
+        screenProjection = new Matrix4().setToOrtho2D(0, 0, Config.window_width, Config.window_height);
+
+        worldCamera = new OrthographicCamera();
+        worldCamera.setToOrtho(false, Config.framebuffer_width, Config.framebuffer_height);
+        worldCamera.update();
 
         world = new World();
 
@@ -81,9 +85,26 @@ public class Main extends ApplicationAdapter {
             Debug.draw_colliders = !Debug.draw_colliders;
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+            Debug.draw_entities = !Debug.draw_entities;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+            Debug.draw_origin = !Debug.draw_origin;
+        }
+
         float dt = Gdx.graphics.getDeltaTime();
 
         world.update(dt);
+
+        var player = world.first(Player.class);
+        // NOTE: this is a little silly because depending which way the player is moving ceiling/floor tracks quickly while the other doesn't
+        var targetX = (player.get(Mover.class).speed.x > 0)
+                ? Calc.ceiling(Calc.approach(worldCamera.position.x, player.entity().position.x, 100 * dt))
+                : Calc.floor  (Calc.approach(worldCamera.position.x, player.entity().position.x, 100 * dt));
+        var targetY = Calc.ceiling(Calc.approach(worldCamera.position.y, player.entity().position.y, 100 * dt));
+        worldCamera.position.set(targetX, targetY, 0);
+        worldCamera.update();
     }
 
     @Override
@@ -96,7 +117,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        texture.dispose();
+        pixel.dispose();
         frameBufferTexture.dispose();
         frameBuffer.dispose();
         batch.dispose();
@@ -106,37 +127,22 @@ public class Main extends ApplicationAdapter {
     // ------------------------------------------------------------------------
 
     private void renderWorldIntoFramebuffer() {
-        frameBufferMatrix.setToOrtho2D(0, 0, Config.framebuffer_width, Config.framebuffer_height);
-
         frameBuffer.begin();
         {
             Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 0f);
             Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-            batch.setProjectionMatrix(frameBufferMatrix);
+            batch.setProjectionMatrix(worldCamera.combined);
             batch.begin();
             {
-                batch.setColor(Color.SLATE);
-                batch.draw(texture, 0, 0, Config.framebuffer_width, Config.framebuffer_height);
-                batch.setColor(Color.WHITE);
-
                 world.render(batch);
             }
             batch.end();
 
-            shapes.setProjectionMatrix(frameBufferMatrix);
+            shapes.setProjectionMatrix(worldCamera.combined);
             shapes.setAutoShapeType(true);
             shapes.begin();
             {
-                // origin coord axis
-                shapes.setColor(Color.BLUE);
-                shapes.rectLine(0, 0, 10, 0, 1);
-                shapes.setColor(Color.GREEN);
-                shapes.rectLine(0, 0, 0, 10, 1);
-                shapes.setColor(Color.RED);
-                shapes.circle(0, 0, 1);
-                shapes.setColor(Color.WHITE);
-
                 // colliders
                 if (Debug.draw_colliders) {
                     shapes.setColor(Color.RED);
@@ -149,13 +155,26 @@ public class Main extends ApplicationAdapter {
                 }
 
                 // entities
-                shapes.setColor(Color.YELLOW);
-                var entity = world.firstEntity();
-                while (entity != null) {
-                    shapes.point(entity.position.x, entity.position.y, 0);
-                    entity = entity.next();
+                if (Debug.draw_entities) {
+                    shapes.setColor(Color.YELLOW);
+                    var entity = world.firstEntity();
+                    while (entity != null) {
+                        shapes.point(entity.position.x, entity.position.y, 0);
+                        entity = entity.next();
+                    }
+                    shapes.setColor(Color.WHITE);
                 }
-                shapes.setColor(Color.WHITE);
+
+                // origin coord axis
+                if (Debug.draw_origin) {
+                    shapes.setColor(Color.BLUE);
+                    shapes.rectLine(0, 0, 10, 0, 1);
+                    shapes.setColor(Color.GREEN);
+                    shapes.rectLine(0, 0, 0, 10, 1);
+                    shapes.setColor(Color.RED);
+                    shapes.circle(0, 0, 1);
+                    shapes.setColor(Color.WHITE);
+                }
             }
             shapes.end();
         }
@@ -166,9 +185,15 @@ public class Main extends ApplicationAdapter {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1f);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(screenProjection);
         batch.begin();
         {
+            // background
+            batch.setColor(Color.SKY);
+            batch.draw(pixel, 0, 0, Config.window_width, Config.window_height);
+            batch.setColor(Color.WHITE);
+
+            // composite scene
             batch.draw(frameBufferRegion, 0, 0, Config.window_width, Config.window_height);
         }
         batch.end();
