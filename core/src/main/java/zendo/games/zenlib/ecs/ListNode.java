@@ -1,4 +1,4 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.ecs;
 
 public abstract class ListNode<T> {
     public T next;

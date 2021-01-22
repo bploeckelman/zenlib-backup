@@ -2,8 +2,7 @@ package zendo.games.zenlib.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.graphics.glutils.HdpiMode;
-import zendo.games.zenlib.Config;
+import zendo.games.zenlib.config.Config;
 import zendo.games.zenlib.Main;
 
 /** Launches the desktop (LWJGL3) application. */

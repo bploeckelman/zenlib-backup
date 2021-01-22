@@ -1,11 +1,10 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.assets;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import zendo.games.zenlib.assets.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;

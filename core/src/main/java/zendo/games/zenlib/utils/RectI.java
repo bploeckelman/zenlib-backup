@@ -1,4 +1,4 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.utils;
 
 public class RectI {
     public int x;

@@ -3,8 +3,8 @@ package zendo.games.zenlib.components;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controllers;
-import zendo.games.zenlib.Calc;
-import zendo.games.zenlib.Component;
+import zendo.games.zenlib.utils.Calc;
+import zendo.games.zenlib.ecs.Component;
 
 public class Player extends Component {
 

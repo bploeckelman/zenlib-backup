@@ -1,4 +1,4 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.config;
 
 public class Config {
     public static final int window_width = 1280;

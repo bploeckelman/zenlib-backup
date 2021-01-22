@@ -8,14 +8,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.math.Matrix4;
+import zendo.games.zenlib.assets.Content;
 import zendo.games.zenlib.components.Collider;
 import zendo.games.zenlib.components.Mover;
 import zendo.games.zenlib.components.Player;
 import zendo.games.zenlib.components.Tilemap;
+import zendo.games.zenlib.config.Config;
+import zendo.games.zenlib.config.Debug;
+import zendo.games.zenlib.ecs.Mask;
+import zendo.games.zenlib.ecs.World;
+import zendo.games.zenlib.utils.Calc;
+import zendo.games.zenlib.utils.Point;
+import zendo.games.zenlib.utils.RectI;
 
 public class Main extends ApplicationAdapter {
 

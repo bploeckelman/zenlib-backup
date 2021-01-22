@@ -1,4 +1,4 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.ecs;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;

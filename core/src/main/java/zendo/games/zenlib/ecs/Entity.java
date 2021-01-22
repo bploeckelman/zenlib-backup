@@ -1,4 +1,6 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.ecs;
+
+import zendo.games.zenlib.utils.Point;
 
 import java.util.ArrayList;
 import java.util.List;

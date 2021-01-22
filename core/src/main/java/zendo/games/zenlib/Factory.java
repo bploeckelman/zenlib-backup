@@ -1,10 +1,13 @@
 package zendo.games.zenlib;
 
-import com.badlogic.gdx.Gdx;
 import zendo.games.zenlib.components.Animator;
 import zendo.games.zenlib.components.Collider;
 import zendo.games.zenlib.components.Mover;
 import zendo.games.zenlib.components.Player;
+import zendo.games.zenlib.ecs.Entity;
+import zendo.games.zenlib.ecs.World;
+import zendo.games.zenlib.utils.Point;
+import zendo.games.zenlib.utils.RectI;
 
 public class Factory {
 

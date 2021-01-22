@@ -1,10 +1,10 @@
 package zendo.games.zenlib.components;
 
 import com.badlogic.gdx.math.Vector2;
-import zendo.games.zenlib.Calc;
-import zendo.games.zenlib.Component;
-import zendo.games.zenlib.Mask;
-import zendo.games.zenlib.Point;
+import zendo.games.zenlib.utils.Calc;
+import zendo.games.zenlib.ecs.Component;
+import zendo.games.zenlib.ecs.Mask;
+import zendo.games.zenlib.utils.Point;
 
 public class Mover extends Component {
 

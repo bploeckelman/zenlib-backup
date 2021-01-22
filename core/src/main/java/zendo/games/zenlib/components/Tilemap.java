@@ -2,7 +2,7 @@ package zendo.games.zenlib.components;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import zendo.games.zenlib.Component;
+import zendo.games.zenlib.ecs.Component;
 
 public class Tilemap extends Component {
 

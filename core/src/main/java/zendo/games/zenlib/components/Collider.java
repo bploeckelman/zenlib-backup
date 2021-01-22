@@ -1,13 +1,13 @@
 package zendo.games.zenlib.components;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import zendo.games.zenlib.*;
+import zendo.games.zenlib.ecs.Component;
+import zendo.games.zenlib.utils.Calc;
+import zendo.games.zenlib.utils.Point;
+import zendo.games.zenlib.utils.RectI;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Collider extends Component {
 

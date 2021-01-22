@@ -1,4 +1,4 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.utils;
 
 import com.badlogic.gdx.math.MathUtils;
 

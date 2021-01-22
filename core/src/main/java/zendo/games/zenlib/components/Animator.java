@@ -2,8 +2,8 @@ package zendo.games.zenlib.components;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import zendo.games.zenlib.Component;
-import zendo.games.zenlib.Content;
+import zendo.games.zenlib.ecs.Component;
+import zendo.games.zenlib.assets.Content;
 import zendo.games.zenlib.assets.Sprite;
 
 public class Animator extends Component {

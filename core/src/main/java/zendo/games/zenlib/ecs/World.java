@@ -1,8 +1,9 @@
-package zendo.games.zenlib;
+package zendo.games.zenlib.ecs;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import zendo.games.zenlib.utils.Point;
 
 import java.util.ArrayList;
 import java.util.Comparator;
