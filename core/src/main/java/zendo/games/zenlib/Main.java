@@ -38,17 +38,12 @@ public class Main extends ApplicationAdapter {
     OrthographicCamera worldCamera;
     World world;
 
-    Texture pixel;
-
     @Override
     public void create () {
         Content.load();
 
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
-
-        pixel = new Texture("pixel.png");
-        pixel.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Config.framebuffer_width, Config.framebuffer_height, false);
         frameBufferTexture = frameBuffer.getColorBufferTexture();
@@ -199,7 +194,6 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        pixel.dispose();
         frameBufferTexture.dispose();
         frameBuffer.dispose();
         batch.dispose();
@@ -272,7 +266,7 @@ public class Main extends ApplicationAdapter {
         {
             // background
             batch.setColor(Color.SKY);
-            batch.draw(pixel, 0, 0, Config.window_width, Config.window_height);
+            batch.draw(Content.pixel, 0, 0, Config.window_width, Config.window_height);
             batch.setColor(Color.WHITE);
 
             // composite scene

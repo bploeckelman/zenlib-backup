@@ -14,6 +14,7 @@ public class Content {
 
     public static BitmapFont font;
     public static TiledMap tiledMap;
+    public static Texture pixel;
 
     private static List<Texture> textures;
     private static List<Sprite> sprites;
@@ -43,6 +44,8 @@ public class Content {
     public static void load() {
         font = new BitmapFont();
         tiledMap = new TmxMapLoader().load("maps/room_0x0.tmx");
+        pixel = new Texture("pixel.png");
+        pixel.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         textures = new ArrayList<>();
         sprites = new ArrayList<>();
@@ -128,6 +131,8 @@ public class Content {
         }
         textures.clear();
         sprites.clear();
+        tiledMap.dispose();
+        pixel.dispose();
         font.dispose();
     }
 
