@@ -1,12 +1,10 @@
 package zendo.games.zenlib;
 
-import zendo.games.zenlib.components.Animator;
-import zendo.games.zenlib.components.Collider;
-import zendo.games.zenlib.components.Mover;
-import zendo.games.zenlib.components.Player;
+import zendo.games.zenlib.components.*;
 import zendo.games.zenlib.ecs.Entity;
 import zendo.games.zenlib.ecs.Mask;
 import zendo.games.zenlib.ecs.World;
+import zendo.games.zenlib.utils.Calc;
 import zendo.games.zenlib.utils.Point;
 import zendo.games.zenlib.utils.RectI;
 
@@ -43,8 +41,35 @@ public class Factory {
 
         var mover = en.add(new Mover(), Mover.class);
         mover.collider = hitbox;
-        mover.gravity = -80;
+        mover.gravity = -300;
         mover.friction = 400;
+        mover.onHitY = (self) -> {
+            anim.play("idle");
+            self.stopY();
+        };
+
+        // jump timer
+        en.add(new Timer(2, (self) -> {
+            if (!mover.onGround()) {
+                self.start(0.05f);
+            } else {
+                self.start(2);
+
+                anim.play("jump");
+                mover.speed.y = 110;
+
+                var player = self.world().first(Player.class);
+                if (player != null) {
+                    var dir = Calc.sign(player.entity().position.x - self.entity().position.x);
+                    if (dir == 0) {
+                        dir = 1;
+                    }
+                    anim.scale.set(dir, 1);
+                    mover.speed.x = dir * 80;
+                }
+            }
+        }), Timer.class);
+
 
         return en;
     }
