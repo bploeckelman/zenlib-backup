@@ -14,11 +14,11 @@ public class Factory {
         var entity = world.addEntity(position);
         entity.add(new Player(), Player.class);
 
-        var anim = entity.add(new Animator("character"), Animator.class);
+        var anim = entity.add(new Animator("player"), Animator.class);
         anim.play("idle");
         anim.depth = 10;
 
-        var rect = RectI.at(-4, 0, 8, 20);
+        var rect = RectI.at(-4, -32, 8, 20);
         var hitbox = entity.add(Collider.makeRect(rect), Collider.class);
 
         var mover = entity.add(new Mover(), Mover.class);
