@@ -380,12 +380,10 @@ public class Aseprite {
                 // load pixels in rgba format
                 // RAW
                 if (cel_type == 0) {
-                    Gdx.app.log(tag, "cel type: raw");
                     stream.get(imageBytes.array(), 0, num_image_bytes);
                 }
                 // DEFLATE
                 else {
-                    Gdx.app.log(tag, "cel type: deflate");
                     // try to decode the pixel bytes
                     try {
                         // note - in noel's parser he clamps this value at INT32_MAX
@@ -445,7 +443,6 @@ public class Aseprite {
             }
             // REFERENCE (this cel directly references a previous cel)
             else if (cel_type == 1) {
-                Gdx.app.log(tag, "cel type: reference");
                 cel.linked_frame_index = stream.getShort();
             }
 
