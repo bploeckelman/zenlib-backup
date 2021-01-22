@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="2020.12.18" orientation="orthogonal" renderorder="right-down" width="50" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="4">
+<map version="1.4" tiledversion="2020.12.18" orientation="orthogonal" renderorder="right-down" width="50" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="7">
  <tileset firstgid="1" name="prototype-basic-tiles" tilewidth="16" tileheight="16" tilecount="40" columns="4">
   <image source="prototype-basic-tiles.png" width="64" height="160"/>
  </tileset>
@@ -7,7 +7,26 @@
   <image source="prototype-interactive-elements.png" width="64" height="128"/>
  </tileset>
  <objectgroup id="2" name="objects">
-  <object id="3" name="spawn" type="spawn" gid="41" x="16" y="240" width="16" height="16"/>
+  <object id="3" name="spawn player" type="spawner" gid="41" x="16" y="240" width="16" height="16">
+   <properties>
+    <property name="target" value="player"/>
+   </properties>
+  </object>
+  <object id="4" name="spawn blob" type="spawner" gid="41" x="144" y="256" width="16" height="16">
+   <properties>
+    <property name="target" value="blob"/>
+   </properties>
+  </object>
+  <object id="5" name="spawn blob" type="spawner" gid="41" x="336" y="208" width="16" height="16">
+   <properties>
+    <property name="target" value="blob"/>
+   </properties>
+  </object>
+  <object id="6" name="spawn blob" type="spawner" gid="41" x="704" y="224" width="16" height="16">
+   <properties>
+    <property name="target" value="blob"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="1" name="collision" width="50" height="20">
   <data encoding="base64" compression="zlib">

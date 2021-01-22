@@ -64,37 +64,53 @@ public class Main extends ApplicationAdapter {
 
         world = new World();
 
-        // load tile map entity and parse Tiled map
-        var room = world.addEntity();
+        loadMap();
 
+        var player = world.first(Player.class);
+        worldCamera.position.set(player.entity().position.x, player.entity().position.y, 0);
+        worldCamera.update();
+    }
+
+    private void loadMap() {
+        // get tiled map parameters
         var collisionLayer = (TiledMapTileLayer) Content.tiledMap.getLayers().get("collision");
         var tileSize = collisionLayer.getTileWidth();
         var columns = collisionLayer.getWidth();
         var rows = collisionLayer.getHeight();
 
-        var tilemap = room.add(new Tilemap(), Tilemap.class);
+        // create a map entity
+        var map = world.addEntity();
+
+        // add a tilemap component for textures
+        var tilemap = map.add(new Tilemap(), Tilemap.class);
         tilemap.init(tileSize, columns, rows);
 
-        var solids = room.add(Collider.makeGrid(tileSize, columns, rows), Collider.class);
+        // add a collider component
+        var solids = map.add(Collider.makeGrid(tileSize, columns, rows), Collider.class);
         solids.mask = Mask.solid;
 
-        var spawn = Point.at(0, 0);
+        // parse the tiled map layers
         for (var layer : Content.tiledMap.getLayers()) {
             // parse tile layers
             if (layer instanceof TiledMapTileLayer) {
                 var tileLayer = (TiledMapTileLayer) layer;
+
                 for (int x = 0; x < columns; x++) {
                     for (int y = 0; y < rows; y++) {
+                        // skip empty cells
                         var cell = tileLayer.getCell(x, y);
                         if (cell == null) continue;
 
+                        // determine what type of layer this is
                         var isCollision = "collision".equals(layer.getName());
                         var isBackground = "background".equals(layer.getName());
 
+                        // only collision layer tiles are used to populate the collider grid
                         if (isCollision) {
                             solids.setCell(x, y, true);
                         }
 
+                        // both collision and background layers are used to set tile textures
                         if (isCollision || isBackground) {
                             tilemap.setCell(x, y, cell.getTile().getTextureRegion());
                         }
@@ -105,24 +121,26 @@ public class Main extends ApplicationAdapter {
             else if ("objects".equals(layer.getName())) {
                 var objects = layer.getObjects().getByType(TiledMapTileMapObject.class);
                 for (var object : objects) {
-                    var type = object.getProperties().get("type");
+                    // parse position property from object
+                    // scale to specified tileSize in case it's different than the tiled map tile size
+                    // this way the scale of the map onscreen can be changed by adjusting the tileSize parameter
+                    var position = Point.at(
+                            (int) (object.getX() / collisionLayer.getTileWidth())   * tileSize,
+                            (int) (object.getY() / collisionLayer.getTileHeight())  * tileSize);
 
-                    // parse player spawn position
-                    if ("spawn".equals(type)) {
-                        spawn.x = (int) (object.getX() / collisionLayer.getTileWidth())  * tileSize;
-                        spawn.y = (int) (object.getY() / collisionLayer.getTileHeight()) * tileSize;
+                    // parse the object type
+                    var type = (String) object.getProperties().get("type");
+                    if ("spawner".equals(type)) {
+                        // figure out what to spawn and do so
+                        var target = (String) object.getProperties().get("target");
+                        switch (target) {
+                            case "player": Factory.player(world, position); break;
+                            case "blob":   Factory.blob(world, position);   break;
+                        }
                     }
                 }
             }
         }
-
-        var player = Factory.player(world, spawn);
-
-        // spawn a blob to test aseprite loading
-        Factory.blob(world, Point.at(spawn.x + 64, spawn.y));
-
-        worldCamera.position.set(player.position.x, player.position.y, 0);
-        worldCamera.update();
     }
 
     public void update() {
