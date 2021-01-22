@@ -77,6 +77,7 @@ public class Player extends Component {
             if (onGround) {
                 if (input.move_dir != 0) {
                     anim.play("run");
+                    anim.speed = (input.run_held) ? 1.4f : 1;
                 } else {
                     anim.play("idle");
                 }
