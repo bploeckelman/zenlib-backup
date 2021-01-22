@@ -10,6 +10,7 @@ public class Animator extends Component {
 
     public Vector2 scale;
     public float rotation;
+    public float speed;
 
     private Sprite sprite;
     private int animationIndex;
@@ -33,6 +34,7 @@ public class Animator extends Component {
         }
         scale.set(1, 1);
         rotation = 0;
+        speed = 1;
         sprite = null;
         animationIndex = 0;
         frameIndex = 0;
@@ -46,6 +48,7 @@ public class Animator extends Component {
             var animator = (Animator) other;
             this.scale.set(animator.scale);
             this.rotation       = animator.rotation;
+            this.speed          = animator.speed;
             this.sprite         = animator.sprite;
             this.animationIndex = animator.animationIndex;
             this.frameIndex     = animator.frameIndex;
@@ -91,7 +94,7 @@ public class Animator extends Component {
         var frame = anim.frames.get(frameIndex);
 
         // increment frame counter
-        frameCounter += dt;
+        frameCounter += speed * dt;
 
         // move to next frame after duration
         while (frameCounter >= frame.duration) {
