@@ -116,9 +116,12 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-        Factory.player(world, spawn);
+        var player = Factory.player(world, spawn);
 
-        worldCamera.position.set(spawn.x, spawn.y, 0);
+        // spawn a blob to test aseprite loading
+        Factory.blob(world, Point.at(spawn.x + 64, spawn.y));
+
+        worldCamera.position.set(player.position.x, player.position.y, 0);
         worldCamera.update();
     }
 

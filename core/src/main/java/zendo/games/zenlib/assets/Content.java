@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import zendo.games.zenlib.utils.Aseprite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,39 @@ public class Content {
             texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
             textures.add(texture);
         }
+
+        // test aseprite loading by creating a blob sprite
+        // todo - dispose Aseprite Pixmap images once done loading them here
+        var blob = new Sprite();
+        {
+            // load ase file
+            var ase = new Aseprite("sprites/blob.ase");
+
+            // extract properties from aseprite
+            blob.name = "blob";
+            blob.origin.set(0, 0);
+            if (ase.slices.size() > 0 && ase.slices.get(0).has_pivot) {
+                blob.origin.set(ase.slices.get(0).pivot.x, ase.slices.get(0).pivot.y);
+            }
+
+            // build animation for each tag
+            for (var tag : ase.tags) {
+                var num_frames = tag.to - tag.from + 1;
+                var anim_frames = new Sprite.Frame[num_frames];
+                for (int i = 0; i < num_frames; i++) {
+                    int frame_index = tag.from + i;
+                    var frame = ase.frames.get(frame_index);
+                    var frame_texture = new Texture(frame.image);
+                    var sprite_frame = new Sprite.Frame(new TextureRegion(frame_texture), frame.duration / 1000f);
+                    anim_frames[i] = sprite_frame;
+                    textures.add(frame_texture);
+                }
+                var anim = new Sprite.Anim(tag.name, anim_frames);
+                blob.animations.add(anim);
+            }
+        }
+        sprites.add(blob);
+        // testing -------------------
 
         // load player sprite for testing....
         var sprite = new Sprite();

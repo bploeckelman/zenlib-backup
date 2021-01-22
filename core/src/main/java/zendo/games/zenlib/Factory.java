@@ -5,6 +5,7 @@ import zendo.games.zenlib.components.Collider;
 import zendo.games.zenlib.components.Mover;
 import zendo.games.zenlib.components.Player;
 import zendo.games.zenlib.ecs.Entity;
+import zendo.games.zenlib.ecs.Mask;
 import zendo.games.zenlib.ecs.World;
 import zendo.games.zenlib.utils.Point;
 import zendo.games.zenlib.utils.RectI;
@@ -30,4 +31,21 @@ public class Factory {
         return entity;
     }
 
+    public static Entity blob(World world, Point position) {
+        var en = world.addEntity(position);
+
+        var anim = en.add(new Animator("blob"), Animator.class);
+        anim.play("idle");
+        anim.depth = 11;
+
+        var hitbox = en.add(Collider.makeRect(RectI.at(-4, -16, 8, 8)), Collider.class);
+        hitbox.mask = Mask.enemy;
+
+        var mover = en.add(new Mover(), Mover.class);
+        mover.collider = hitbox;
+        mover.gravity = -80;
+        mover.friction = 400;
+
+        return en;
+    }
 }
