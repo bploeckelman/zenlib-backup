@@ -38,7 +38,7 @@ public class Player extends Component {
         var controller_button_r1   = (controller == null) ? 0 : controller.getMapping().buttonR1;
         var controller_axis_left_x = (controller == null) ? 0 : controller.getMapping().axisLeftX;
 
-        var controller_dead_zone = 0.2f;
+        var controller_dead_zone = 0.3f;
         var controller_axis_left_x_value = (controller == null) ? 0 : controller.getAxis(controller_axis_left_x);
         var controller_axis_left_x_in_dead_zone = (controller != null && Calc.abs(controller_axis_left_x_value) <= controller_dead_zone);
 
