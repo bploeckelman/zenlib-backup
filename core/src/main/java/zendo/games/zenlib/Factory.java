@@ -36,7 +36,8 @@ public class Factory {
         anim.play("idle");
         anim.depth = 11;
 
-        var hitbox = en.add(Collider.makeRect(RectI.at(-4, 0, 8, 8)), Collider.class);
+        var rect = RectI.at(-6, 0, 12, 12);
+        var hitbox = en.add(Collider.makeRect(rect), Collider.class);
         hitbox.mask = Mask.enemy;
 
         var mover = en.add(new Mover(), Mover.class);
@@ -46,6 +47,30 @@ public class Factory {
         mover.onHitY = (self) -> {
             anim.play("idle");
             self.stopY();
+        };
+
+        var hurtable = en.add(new Hurtable(), Hurtable.class);
+        hurtable.hurtBy = Mask.player_attack;
+        hurtable.collider = hitbox;
+        hurtable.onHurt = new Hurtable.OnHurt() {
+            // note: if we want to include some mutable state with the callback
+            //       it is necessary to use an anonymous class instead of a lambda
+            private int health = 3;
+
+            @Override
+            public void hurt(Hurtable self) {
+                var player = self.world().first(Player.class);
+                if (player != null) {
+                    var sign = Calc.sign(self.entity().position.x - player.entity().position.x);
+                    mover.speed.x = sign * 120;
+                }
+
+                health--;
+                if (health <= 0) {
+                    Factory.pop(world, Point.at(self.entity().position.x, self.entity().position.y - 16));
+                    self.entity().destroy();
+                }
+            }
         };
 
         // jump timer
@@ -70,7 +95,20 @@ public class Factory {
             }
         }), Timer.class);
 
+        return en;
+    }
+
+    public static Entity pop(World world, Point position) {
+        var en = world.addEntity(position);
+
+        var anim = en.add(new Animator("pop"), Animator.class);
+        anim.play("pop");
+        anim.depth = 20;
+
+        // self terminate when complete
+        en.add(new Timer(anim.animation().duration(), (self) -> self.entity().destroy()), Timer.class);
 
         return en;
     }
+
 }

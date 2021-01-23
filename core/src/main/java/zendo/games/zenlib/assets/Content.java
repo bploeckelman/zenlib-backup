@@ -97,6 +97,39 @@ public class Content {
             }
         }
         sprites.add(blob);
+
+        // load pop sprite
+        var pop = new Sprite();
+        {
+            // load ase file
+            var ase = new Aseprite("sprites/pop.ase");
+
+            // extract properties from aseprite
+            pop.name = "pop";
+            pop.origin.set(0, 0);
+            if (ase.slices.size() > 0 && ase.slices.get(0).has_pivot) {
+                var slice = ase.slices.get(0);
+                // flip slice pivot point to be y-up to match in-game reference with in-aseprite pivot point
+                pop.origin.set(slice.pivot.x, slice.pivot.y - slice.height);
+            }
+
+            // build animation for each tag
+            for (var tag : ase.tags) {
+                var num_frames = tag.to - tag.from + 1;
+                var anim_frames = new Sprite.Frame[num_frames];
+                for (int i = 0; i < num_frames; i++) {
+                    int frame_index = tag.from + i;
+                    var frame = ase.frames.get(frame_index);
+                    var frame_texture = new Texture(frame.image);
+                    var sprite_frame = new Sprite.Frame(new TextureRegion(frame_texture), frame.duration / 1000f);
+                    anim_frames[i] = sprite_frame;
+                    textures.add(frame_texture);
+                }
+                var anim = new Sprite.Anim(tag.name, anim_frames);
+                pop.animations.add(anim);
+            }
+        }
+        sprites.add(pop);
     }
 
     public static void unload() {

@@ -19,14 +19,21 @@ public class Player extends Component {
     private static final float max_ground_speed_run = 200;
     private static final float jump_impulse = 130;
     private static final float jump_time = 0.18f;
+    private static final float hurt_friction = 200;
+    private static final float hurt_duration = 0.5f;
+    private static final float invincible_duration = 1.5f;
 
     enum State {
-        normal, attack
+        normal, attack, hurt
     }
 
+    private int health = 3;
     private int facing = 1;
     private float jumpTimer = 0;
     private float attackTimer = 0;
+    private float hurtTimer = 0;
+    private float invincibleTimer = 0;
+    private float lastFlickerTime = 0;
     private boolean onGround = false;
     private State state = State.normal;
     private Collider attackCollider = null;
@@ -110,7 +117,7 @@ public class Player extends Component {
             if (onGround) {
                 if (input.move_dir != 0) {
                     anim.play("run");
-                    anim.speed = (input.run_held) ? 1.4f : 1;
+//                    anim.speed = (input.run_held) ? 1.4f : 1;
                 } else {
                     anim.play("idle");
                 }
@@ -211,6 +218,18 @@ public class Player extends Component {
                 state = State.normal;
             }
         }
+        // HURT STATE -------------------------------------
+        else if (state == State.hurt) {
+            hurtTimer -= dt;
+            if (hurtTimer <= 0) {
+                state = State.normal;
+            }
+
+            // friction
+            if (onGround) {
+                mover.speed.x = Calc.approach(mover.speed.x, 0, hurt_friction * dt);
+            }
+        }
 
         // variable jumping based on how long the button is held down
         if (jumpTimer > 0) {
@@ -232,6 +251,43 @@ public class Player extends Component {
             }
 
             mover.speed.y += grav * dt;
+        }
+
+        // invincible timer (somewhat duplicates logic from Hurtable component)
+        if (invincibleTimer > 0 && state != State.hurt) {
+            // flicker animation
+            // TODO: boolean Time.on_interval(sec)
+            if (lastFlickerTime > invincibleTimer + 0.08f) {
+                lastFlickerTime = invincibleTimer;
+                entity().visible = !entity.visible;
+            }
+
+            invincibleTimer -= dt;
+            if (invincibleTimer <= 0) {
+                entity().visible = true;
+            }
+        }
+
+        // hurt check (could be done with a Hurtable component)
+        var hitbox = get(Collider.class);
+        if (invincibleTimer <= 0 && hitbox.check(Mask.enemy)) {
+            // TODO: void Time.pause_for(sec)
+            anim.play("hurt");
+
+            // stop attack in progress
+            if (attackCollider != null) {
+                attackCollider.destroy();
+                attackCollider = null;
+            }
+
+            // for now bounce back is always the reverse direction player is facing
+            mover.speed.set(-facing * 100, 80);
+
+            health--;
+            hurtTimer = hurt_duration;
+            invincibleTimer = invincible_duration;
+            lastFlickerTime = invincibleTimer;
+            state = State.hurt;
         }
     }
 

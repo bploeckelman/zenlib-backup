@@ -8,7 +8,8 @@ import java.util.Map;
 
 public abstract class Component extends ListNode<Component> {
 
-    public Entity entity;
+    protected Entity entity;
+
     public int type;
     public int depth;
     public boolean active;
