@@ -3,8 +3,10 @@ package zendo.games.zenlib.components;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controllers;
+import zendo.games.zenlib.ecs.Mask;
 import zendo.games.zenlib.utils.Calc;
 import zendo.games.zenlib.ecs.Component;
+import zendo.games.zenlib.utils.RectI;
 
 public class Player extends Component {
 
@@ -18,15 +20,23 @@ public class Player extends Component {
     private static final float jump_impulse = 130;
     private static final float jump_time = 0.18f;
 
+    enum State {
+        normal, attack
+    }
+
     private int facing = 1;
     private float jumpTimer = 0;
+    private float attackTimer = 0;
     private boolean onGround = false;
+    private State state = State.normal;
+    private Collider attackCollider = null;
 
     private static class InputState {
         int move_dir = 0;
         boolean run_held = false;
         boolean jump_held = false;
         boolean jump = false;
+        boolean attack = false;
     }
     private final InputState input = new InputState();
 
@@ -35,6 +45,7 @@ public class Player extends Component {
         var controller = controllers.isEmpty() ? null : controllers.get(0);
 
         var controller_button_a    = (controller == null) ? 0 : controller.getMapping().buttonA;
+        var controller_button_x    = (controller == null) ? 0 : controller.getMapping().buttonX;
         var controller_button_r1   = (controller == null) ? 0 : controller.getMapping().buttonR1;
         var controller_axis_left_x = (controller == null) ? 0 : controller.getMapping().axisLeftX;
 
@@ -57,6 +68,11 @@ public class Player extends Component {
         // run input
         input.run_held = false;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || (controller != null && controller.getButton(controller_button_r1))) input.run_held = true;
+
+        // attack input
+        input.attack = false;
+        // TODO: need additional state var to get 'just pressed' for controller button
+        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) || (controller != null && controller.getButton(controller_button_x))) input.attack = true;
     }
 
     @Override
@@ -73,6 +89,23 @@ public class Player extends Component {
 
         // sprite
         {
+            // landing squish
+            if (!wasOnGround && onGround) {
+                anim.scale.set(facing * 1.5f, 0.7f);
+            }
+
+            // lerp scale back to one
+            anim.scale.set(
+                    Calc.approach(anim.scale.x, facing, 4 * dt),
+                    Calc.approach(anim.scale.y, 1, 4 * dt)
+            );
+
+            // facing
+            anim.scale.x = Calc.abs(anim.scale.x) * facing;
+        }
+
+        // NORMAL STATE -----------------------------------
+        if (state == State.normal) {
             // stopped
             if (onGround) {
                 if (input.move_dir != 0) {
@@ -89,51 +122,93 @@ public class Player extends Component {
                 }
             }
 
-            // landing squish
-            if (!wasOnGround && onGround) {
-                anim.scale.set(facing * 1.5f, 0.7f);
+            // horizontal movement
+            {
+                // acceleration
+                var accel = (input.run_held) ? ground_accel_run : ground_accel;
+                mover.speed.x += input.move_dir * accel * dt;
+
+                // max speed
+                var max = (input.run_held) ? max_ground_speed_run : max_ground_speed;
+                if (Calc.abs(mover.speed.x) > max) {
+                    mover.speed.x = Calc.approach(mover.speed.x, Calc.sign(mover.speed.x) * max, 2000 * dt);
+                }
+
+                // friction
+                if (input.move_dir == 0 && onGround) {
+                    mover.speed.x = Calc.approach(mover.speed.x, 0, friction * dt);
+                }
+
+                // facing direction
+                if (input.move_dir != 0) {
+                    facing = input.move_dir;
+                }
             }
 
-            // lerp scale back to one
-            anim.scale.set(
-                    Calc.approach(anim.scale.x, facing, 4 * dt),
-                    Calc.approach(anim.scale.y, 1, 4 * dt)
-            );
+            // trigger a jump
+            {
+                if (input.jump && onGround) {
+                    // squoosh on jomp
+                    anim.scale.set(facing * 0.65f, 1.4f);
 
-            // facing
-            anim.scale.x = Calc.abs(anim.scale.x) * facing;
+                    jumpTimer = jump_time;
+                }
+            }
+
+            // begin attacking
+            if (input.attack) {
+                state = State.attack;
+                attackTimer = 0;
+
+                if (attackCollider == null) {
+                    // update the attack collider rect during attack state based on what anim frame we're in
+                    attackCollider = entity().add(Collider.makeRect(new RectI()), Collider.class);
+                    attackCollider.mask = Mask.player_attack;
+                }
+
+                if (onGround) {
+                    mover.stopX();
+                }
+            }
         }
+        // ATTACK STATE -----------------------------------
+        else if (state == State.attack) {
+            anim.play("attack");
+            attackTimer += dt;
 
-        // horizontal movement
-        {
-            // acceleration
-            var accel = (input.run_held) ? ground_accel_run : ground_accel;
-            mover.speed.x += input.move_dir * accel * dt;
+            // setup hitbox depending where in the attack animation we currently are
+            // assumes right facing, if left facing it flips the hitbox afterwards
+            // note - timer threshold values are hardcoded, they come from frame durations of each anim frame
 
-            // max speed
-            var max = (input.run_held) ? max_ground_speed_run : max_ground_speed;
-            if (Calc.abs(mover.speed.x) > max) {
-                mover.speed.x = Calc.approach(mover.speed.x, Calc.sign(mover.speed.x) * max, 2000 * dt);
+            if (attackTimer < 0.1f) {
+                attackCollider.setRect(-12, 3, 19, 12);
+            }
+            else if (attackTimer < 0.2f) {
+                attackCollider.setRect(8, 11, 22, 9);
+            }
+            else if (attackTimer < 0.3f) {
+                attackCollider.setRect(7, 11, 23, 9);
+            }
+            else if (attackTimer < 0.4f) {
+                attackCollider.setRect(7, 11, 17, 9);
+            }
+            // done with attack anim, destroy attack collider
+            else if (attackCollider != null) {
+                attackCollider.destroy();
+                attackCollider = null;
             }
 
-            // friction
-            if (input.move_dir == 0 && onGround) {
-                mover.speed.x = Calc.approach(mover.speed.x, 0, friction * dt);
+            // flip hitbox if you're facing left
+            if (facing < 0 && attackCollider != null) {
+                var rect = attackCollider.getRect();
+                rect.x = -(rect.x + rect.w);
+                attackCollider.setRect(rect);
             }
 
-            // facing direction
-            if (input.move_dir != 0) {
-                facing = input.move_dir;
-            }
-        }
-
-        // trigger a jump
-        {
-            if (input.jump && onGround) {
-                // squoosh on jomp
-                anim.scale.set(facing * 0.65f, 1.4f);
-
-                jumpTimer = jump_time;
+            // end the attack
+            if (attackTimer >= anim.animation().duration()) {
+                anim.play("idle");
+                state = State.normal;
             }
         }
 

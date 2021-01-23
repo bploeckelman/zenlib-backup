@@ -9,14 +9,18 @@ public class RectI {
     public RectI() {}
 
     private RectI(int x, int y, int w, int h) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
+        set(x, y, w, h);
     }
 
     public static RectI at(int x, int y, int w, int h) {
         return new RectI(x, y, w, h);
+    }
+
+    public void set(int x, int y, int w, int h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
     }
 
     public boolean overlaps(RectI other) {

@@ -18,7 +18,7 @@ public class Factory {
         anim.play("idle");
         anim.depth = 10;
 
-        var rect = RectI.at(-4, -32, 8, 20);
+        var rect = RectI.at(-4, 0, 8, 20);
         var hitbox = entity.add(Collider.makeRect(rect), Collider.class);
 
         var mover = entity.add(new Mover(), Mover.class);
@@ -36,7 +36,7 @@ public class Factory {
         anim.play("idle");
         anim.depth = 11;
 
-        var hitbox = en.add(Collider.makeRect(RectI.at(-4, -16, 8, 8)), Collider.class);
+        var hitbox = en.add(Collider.makeRect(RectI.at(-4, 0, 8, 8)), Collider.class);
         hitbox.mask = Mask.enemy;
 
         var mover = en.add(new Mover(), Mover.class);

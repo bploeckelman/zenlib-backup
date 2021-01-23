@@ -162,7 +162,7 @@ public class World {
             var type = component.type;
 
             // mark destroyed
-            component.destroy();
+            component.destroyed();
 
             // remove from entity
             var list = component.entity.components;

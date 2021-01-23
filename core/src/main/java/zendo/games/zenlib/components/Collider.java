@@ -76,6 +76,11 @@ public class Collider extends Component {
         this.rect = rect;
     }
 
+    public void setRect(int x, int y, int w, int h) {
+        assert (shape == Shape.rect) : "Collider is not a Rectangle";
+        this.rect.set(x, y, w, h);
+    }
+
     public Grid getGrid() {
         assert (shape == Shape.grid) : "Collider is not a Grid";
         return grid;

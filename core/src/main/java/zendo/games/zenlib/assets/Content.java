@@ -42,7 +42,9 @@ public class Content {
             player.name = "player";
             player.origin.set(0, 0);
             if (ase.slices.size() > 0 && ase.slices.get(0).has_pivot) {
-                player.origin.set(ase.slices.get(0).pivot.x, ase.slices.get(0).pivot.y);
+                var slice = ase.slices.get(0);
+                // flip slice pivot point to be y-up to match in-game reference with in-aseprite pivot point
+                player.origin.set(slice.pivot.x, slice.pivot.y - slice.height);
             }
 
             // build animation for each tag
@@ -73,7 +75,9 @@ public class Content {
             blob.name = "blob";
             blob.origin.set(0, 0);
             if (ase.slices.size() > 0 && ase.slices.get(0).has_pivot) {
-                blob.origin.set(ase.slices.get(0).pivot.x, ase.slices.get(0).pivot.y);
+                var slice = ase.slices.get(0);
+                // flip slice pivot point to be y-up to match in-game reference with in-aseprite pivot point
+                blob.origin.set(slice.pivot.x, slice.pivot.y - slice.height);
             }
 
             // build animation for each tag
