@@ -219,7 +219,7 @@ public class Aseprite {
     // ----------------------------------------------------
 
     private void parse(FileHandle file) {
-        Gdx.app.log(tag, "Loading file: " + file.path());
+        Gdx.app.debug(tag, "Loading file: " + file.path());
         if (!file.exists()) {
             throw new GdxRuntimeException("Aseprite file does not exist: " + file.path());
         }
