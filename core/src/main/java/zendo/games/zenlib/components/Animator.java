@@ -85,6 +85,15 @@ public class Animator extends Component {
                     animationIndex = i;
                     frameIndex = 0;
                     frameCounter = 0;
+
+                    // update collider if appropriate
+                    var collider = get(Collider.class);
+                    if (collider != null && collider.shape() == Collider.Shape.rect) {
+                        var hitbox = frame().hitbox;
+                        if (hitbox != null) {
+                            collider.setRect(hitbox);
+                        }
+                    }
                 }
                 break;
             }

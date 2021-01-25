@@ -34,18 +34,45 @@ public class Factory {
         anim.play("idle");
         anim.depth = 11;
 
-        // hitbox is updated based on current Animator frame in Animator update
-        var hitbox = en.add(Collider.makeRect(new RectI()), Collider.class);
+        // hitbox is updated based on current Animator frame in Animator.play
+        var rect = new RectI();
+        if (anim.frame().hitbox != null) {
+            rect.set(anim.frame().hitbox);
+        }
+        var hitbox = en.add(Collider.makeRect(rect), Collider.class);
         hitbox.mask = Mask.enemy;
-        hitbox.animator = anim;
 
         var mover = en.add(new Mover(), Mover.class);
         mover.collider = hitbox;
         mover.gravity = -300;
         mover.friction = 400;
-        mover.onHitY = (self) -> {
+        mover.onHitX = (self) -> {
+            var move_sign = Calc.sign(mover.speed.x);
+
+            self.stopX();
+
+            // note - this sucks
+            // if the hitbox changed as a part of switching to a new animation,
+            // move the blob out of collision in case the x extents are different
+            var prev_hitbox = anim.frame().hitbox;
             anim.play("idle");
+            var new_hitbox = anim.frame().hitbox;
+            var dx = new_hitbox.x - prev_hitbox.x;
+            self.entity().position.x += move_sign * dx;
+        };
+        mover.onHitY = (self) -> {
+            var move_sign = Calc.sign(mover.speed.y);
+
             self.stopY();
+
+            // note - this sucks
+            // if the hitbox changed as a part of switching to a new animation,
+            // move the blob out of collision in case the y extents are different
+            var prev_hitbox = anim.frame().hitbox;
+            anim.play("idle");
+            var new_hitbox = anim.frame().hitbox;
+            var dy = new_hitbox.y - prev_hitbox.y;
+            self.entity().position.y += move_sign * dy;
         };
 
         var hurtable = en.add(new Hurtable(), Hurtable.class);
