@@ -143,16 +143,27 @@ public class Main extends ApplicationAdapter {
             Gdx.app.exit();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
-            Debug.draw_colliders = !Debug.draw_colliders;
-        }
+        // debug input handling
+        {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+                Debug.draw_colliders = !Debug.draw_colliders;
+            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
-            Debug.draw_entities = !Debug.draw_entities;
-        }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+                Debug.draw_entities = !Debug.draw_entities;
+            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
-            Debug.draw_origin = !Debug.draw_origin;
+            if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+                Debug.draw_origin = !Debug.draw_origin;
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {
+                Debug.frame_step = !Debug.frame_step;
+            }
+
+            if (Debug.frame_step && !Gdx.input.isKeyJustPressed(Debug.frame_step_key)) {
+                return;
+            }
         }
 
         float dt = Gdx.graphics.getDeltaTime();
