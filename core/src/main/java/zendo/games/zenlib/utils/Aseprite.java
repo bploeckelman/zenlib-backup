@@ -234,6 +234,7 @@ public class Aseprite {
 
         public static class AnimFrameInfo {
             public String region_name;
+            public RectI hitbox = null;
             public int region_index;
             public float duration;
         }
@@ -285,6 +286,7 @@ public class Aseprite {
                     anim_frame_infos[i].region_name = frame_region_name;
                     anim_frame_infos[i].region_index = i;
                     anim_frame_infos[i].duration = frame_duration;
+                    anim_frame_infos[i].hitbox = extract_hitbox_data(info, frame);
                 }
             }
 
@@ -297,6 +299,83 @@ public class Aseprite {
             }
         }
         return info;
+    }
+
+    /**
+     * If there is a layer named "hitbox", and a cel in that layer in the specified frame,
+     * try to extract pixel data from that cel and convert it into rectangular hitbox offsets
+     *
+     * @param info the SpriteInfo containing sprite data to try to extract hitbox data from
+     * @param frame the Aseprite.Frame to try to extract hitbox data for
+     *
+     * @return extents and offsets from the sprite's pivot point that define a hitbox region for the specified frame,
+     *         or null if any of the following conditions are true
+     *         - no hitbox layer is found in the aseprite
+     *         - no cel exists in the hitbox layer
+     *         - all pixels in the hitbox cel for this frame are transparent
+     */
+    private static RectI extract_hitbox_data(SpriteInfo info, Frame frame) {
+        // check whether a hitbox layer exists
+        var hitbox_layer_index = -1;
+        for (int layer_index = 0; layer_index < info.aseprite.layers.size(); layer_index++) {
+            var layer = info.aseprite.layers.get(layer_index);
+            if ("hitbox".equals(layer.name)) {
+                hitbox_layer_index = layer_index;
+                break;
+            }
+        }
+
+        // no hitbox layer found
+        if (hitbox_layer_index == -1) {
+            return null;
+        }
+
+        // extract the slice and pivot point (if any)
+        int pivot_x = 0;
+        int pivot_y = 0;
+        int slice_h = 0;
+        var slice = info.aseprite.slices.get(0);
+        if (slice != null) {
+            // flip slice pivot point to be y-up to match in-game reference with aseprite pivot point
+            slice_h = slice.height;
+            pivot_x = slice.pivot.x;
+            pivot_y = slice.pivot.y - slice_h;
+        }
+
+        // note:
+        //  a Cel is defined by non-transparent pixels in a frame
+        //  so cel (x,y) are offsets from frame (0,0), except (0,0) is top left in both cases
+        //  but we're flipping y to make the slice pivot point look correct in game,
+        //  so some extra work needs to be done to get the correct cel (x,y) for extents,
+        //  then those extent values need to be shifted to take into account the pivot point
+        for (var cel : frame.cels) {
+            if (cel.layer_index == hitbox_layer_index) {
+                // check whether there are any non-transparent pixels in this cel
+                if (cel.image.getWidth() == 0 || cel.image.getHeight() == 0) {
+                    return null;
+                }
+
+                // flip cel to y-up, relative to slice bounds (which should just match image bounds)
+                var hitbox_extents = RectI.at(
+                        cel.x, slice_h - cel.y - cel.image.getHeight(),
+                        cel.image.getWidth(), cel.image.getHeight()
+                );
+
+                // calculate offsets from extents and pivot position
+                var hitbox_offsets = RectI.at(
+                        hitbox_extents.x - pivot_x,
+                        hitbox_extents.y - pivot_y,
+                        hitbox_extents.w,
+                        hitbox_extents.h
+                );
+
+                // return the calculated offsets for the specified animation frame
+                return RectI.at(hitbox_offsets);
+            }
+        }
+
+        // no cell found in hitbox layer for this frame
+        return null;
     }
 
     /**
@@ -332,6 +411,11 @@ public class Aseprite {
                     var frame_region = atlas.findRegion(frame_info.region_name, frame_info.region_index);
                     var frame_duration = anim_frame_info[i].duration;
                     anim_frames[i] = new Sprite.Frame(frame_region, frame_duration / 1000f);
+
+                    // TODO: may need to flip-y on this depending how we load it in loadAndPack()
+                    if (frame_info.hitbox != null) {
+                        anim_frames[i].hitbox = frame_info.hitbox;
+                    }
                 }
 
                 // build animation from frames
@@ -577,7 +661,11 @@ public class Aseprite {
             }
 
             // draw to frame if visible
-            if ((layers.get(cel.layer_index).flags & layer_flag_visible) != 0) {
+            // note:
+            //  render_cel doesn't properly composite multiple cels per frame (yet)
+            //  also, hitbox layers should not get rendered into the frame
+            if ((layers.get(cel.layer_index).flags & layer_flag_visible) != 0
+             && (!layers.get(cel.layer_index).name.equals("hitbox"))) {
                 render_cel(cel, frame);
             }
 

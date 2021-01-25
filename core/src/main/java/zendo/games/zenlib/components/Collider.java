@@ -21,6 +21,7 @@ public class Collider extends Component {
     }
 
     public int mask = 0;
+    public Animator animator = null;
 
     private Shape shape = Shape.none;
     private RectI rect;
@@ -150,6 +151,17 @@ public class Collider extends Component {
         }
 
         return false;
+    }
+
+    @Override
+    public void update(float dt) {
+        if (animator == null) return;
+        if (shape == Shape.grid) return;
+
+        var frame = animator.frame();
+        if (frame.hitbox != null) {
+            rect.set(frame.hitbox);
+        }
     }
 
     @Override

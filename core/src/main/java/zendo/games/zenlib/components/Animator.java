@@ -67,6 +67,11 @@ public class Animator extends Component {
         return null;
     }
 
+    public Sprite.Frame frame() {
+        var anim = animation();
+        return anim.frames.get(frameIndex);
+    }
+
     public void play(String animation) {
         play(animation, false);
     }

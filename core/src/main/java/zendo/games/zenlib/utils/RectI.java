@@ -8,8 +8,16 @@ public class RectI {
 
     public RectI() {}
 
+    private RectI(RectI other) {
+        set(other);
+    }
+
     private RectI(int x, int y, int w, int h) {
         set(x, y, w, h);
+    }
+
+    public static RectI at(RectI other) {
+        return new RectI(other);
     }
 
     public static RectI at(int x, int y, int w, int h) {
@@ -21,6 +29,10 @@ public class RectI {
         this.y = y;
         this.w = w;
         this.h = h;
+    }
+
+    public void set(RectI other) {
+        set(other.x, other.y, other.w, other.h);
     }
 
     public boolean overlaps(RectI other) {

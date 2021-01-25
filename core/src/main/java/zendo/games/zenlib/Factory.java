@@ -23,8 +23,6 @@ public class Factory {
 
         var mover = entity.add(new Mover(), Mover.class);
         mover.collider = hitbox;
-//        mover.onHitX = (self) -> Gdx.app.log("Mover", "hit x");
-//        mover.onHitY = (self) -> Gdx.app.log("Mover", "hit y");
 
         return entity;
     }
@@ -36,9 +34,10 @@ public class Factory {
         anim.play("idle");
         anim.depth = 11;
 
-        var rect = RectI.at(-6, 0, 12, 12);
-        var hitbox = en.add(Collider.makeRect(rect), Collider.class);
+        // hitbox is updated based on current Animator frame in Animator update
+        var hitbox = en.add(Collider.makeRect(new RectI()), Collider.class);
         hitbox.mask = Mask.enemy;
+        hitbox.animator = anim;
 
         var mover = en.add(new Mover(), Mover.class);
         mover.collider = hitbox;

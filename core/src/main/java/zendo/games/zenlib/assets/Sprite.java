@@ -2,6 +2,7 @@ package zendo.games.zenlib.assets;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import zendo.games.zenlib.utils.RectI;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,7 @@ public class Sprite {
 
     public static class Frame {
         public TextureRegion image;
+        public RectI hitbox = null;
         public float duration; // in seconds
         public Frame(TextureRegion image) {
             this(image, 0.1f);
