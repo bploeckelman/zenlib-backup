@@ -2,6 +2,7 @@ package zendo.games.zenlib.components;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import lombok.var;
 import zendo.games.zenlib.ecs.Component;
 import zendo.games.zenlib.utils.Calc;
 import zendo.games.zenlib.utils.Point;

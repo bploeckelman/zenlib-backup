@@ -3,6 +3,7 @@ package zendo.games.zenlib.components;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controllers;
+import lombok.var;
 import zendo.games.zenlib.ecs.Mask;
 import zendo.games.zenlib.utils.Calc;
 import zendo.games.zenlib.ecs.Component;

@@ -1,5 +1,6 @@
 package zendo.games.zenlib;
 
+import lombok.var;
 import zendo.games.zenlib.components.*;
 import zendo.games.zenlib.ecs.Entity;
 import zendo.games.zenlib.ecs.Mask;

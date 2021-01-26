@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
+import lombok.var;
 import zendo.games.zenlib.config.Debug;
 import zendo.games.zenlib.utils.Aseprite;
 

@@ -1,5 +1,6 @@
 package zendo.games.zenlib.components;
 
+import lombok.var;
 import zendo.games.zenlib.ecs.Component;
 import zendo.games.zenlib.utils.Time;
 

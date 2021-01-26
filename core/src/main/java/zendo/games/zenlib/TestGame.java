@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.math.Matrix4;
+import lombok.var;
 import zendo.games.zenlib.assets.Content;
 import zendo.games.zenlib.components.Collider;
 import zendo.games.zenlib.components.Mover;

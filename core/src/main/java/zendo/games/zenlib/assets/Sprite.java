@@ -2,6 +2,7 @@ package zendo.games.zenlib.assets;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import lombok.var;
 import zendo.games.zenlib.utils.RectI;
 
 import java.util.ArrayList;

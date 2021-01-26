@@ -1,5 +1,6 @@
 package zendo.games.zenlib.ecs;
 
+import lombok.var;
 import zendo.games.zenlib.utils.Point;
 
 import java.util.ArrayList;
