@@ -4,6 +4,10 @@ import com.badlogic.gdx.math.MathUtils;
 
 public class Calc {
 
+    public static float modf(float x, float m) {
+        return x - (int)(x / m) * m;
+    }
+
     public static int clampInt(int t, int min, int max) {
         if      (t < min) return min;
         else if (t > max) return max;

@@ -7,6 +7,7 @@ import zendo.games.zenlib.ecs.Mask;
 import zendo.games.zenlib.utils.Calc;
 import zendo.games.zenlib.ecs.Component;
 import zendo.games.zenlib.utils.RectI;
+import zendo.games.zenlib.utils.Time;
 
 public class Player extends Component {
 
@@ -33,7 +34,6 @@ public class Player extends Component {
     private float attackTimer = 0;
     private float hurtTimer = 0;
     private float invincibleTimer = 0;
-    private float lastFlickerTime = 0;
     private boolean onGround = false;
     private State state = State.normal;
     private Collider attackCollider = null;
@@ -256,9 +256,7 @@ public class Player extends Component {
         // invincible timer (somewhat duplicates logic from Hurtable component)
         if (invincibleTimer > 0 && state != State.hurt) {
             // flicker animation
-            // TODO: boolean Time.on_interval(sec)
-            if (lastFlickerTime > invincibleTimer + 0.08f) {
-                lastFlickerTime = invincibleTimer;
+            if (Time.on_interval(0.05f)) {
                 entity().visible = !entity.visible;
             }
 
@@ -271,7 +269,7 @@ public class Player extends Component {
         // hurt check (could be done with a Hurtable component)
         var hitbox = get(Collider.class);
         if (invincibleTimer <= 0 && hitbox.check(Mask.enemy)) {
-            // TODO: void Time.pause_for(sec)
+            Time.pause_for(0.1f);
             anim.play("hurt");
 
             // stop attack in progress
@@ -286,7 +284,6 @@ public class Player extends Component {
             health--;
             hurtTimer = hurt_duration;
             invincibleTimer = invincible_duration;
-            lastFlickerTime = invincibleTimer;
             state = State.hurt;
         }
     }

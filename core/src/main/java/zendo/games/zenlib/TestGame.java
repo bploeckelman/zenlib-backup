@@ -1,6 +1,5 @@
 package zendo.games.zenlib;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
@@ -24,7 +23,7 @@ import zendo.games.zenlib.utils.Calc;
 import zendo.games.zenlib.utils.Point;
 import zendo.games.zenlib.utils.RectI;
 
-public class Main extends ApplicationAdapter {
+public class TestGame implements Game {
 
     SpriteBatch batch;
     ShapeRenderer shapes;
@@ -39,7 +38,7 @@ public class Main extends ApplicationAdapter {
     World world;
 
     @Override
-    public void create () {
+    public void init() {
         Content.load();
 
         batch = new SpriteBatch();
@@ -138,7 +137,8 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    public void update() {
+    @Override
+    public void update(float dt) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
@@ -165,8 +165,6 @@ public class Main extends ApplicationAdapter {
                 return;
             }
         }
-
-        float dt = Gdx.graphics.getDeltaTime();
 
         world.update(dt);
 
@@ -197,14 +195,12 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
-        update();
-
         renderWorldIntoFramebuffer();
         renderFramebufferIntoWindow();
     }
 
     @Override
-    public void dispose() {
+    public void shutdown() {
         frameBufferTexture.dispose();
         frameBuffer.dispose();
         batch.dispose();

@@ -1,6 +1,7 @@
 package zendo.games.zenlib.components;
 
 import zendo.games.zenlib.ecs.Component;
+import zendo.games.zenlib.utils.Time;
 
 public class Hurtable extends Component {
 
@@ -13,7 +14,6 @@ public class Hurtable extends Component {
     public int hurtBy;
     public float stunTimer;
     public float flickerTimer;
-    public float lastFlickerTime;
 
     public Hurtable() {
         reset();
@@ -27,7 +27,6 @@ public class Hurtable extends Component {
         hurtBy = 0;
         stunTimer = 0;
         flickerTimer = 0;
-        lastFlickerTime = 0;
     }
 
     @Override
@@ -40,7 +39,6 @@ public class Hurtable extends Component {
             this.hurtBy          = hurtable.hurtBy;
             this.stunTimer       = hurtable.stunTimer;
             this.flickerTimer    = hurtable.flickerTimer;
-            this.lastFlickerTime = hurtable.lastFlickerTime;
         }
     }
 
@@ -48,10 +46,9 @@ public class Hurtable extends Component {
     public void update(float dt) {
         if (collider != null && onHurt != null && stunTimer <= 0) {
             if (collider.check(hurtBy)) {
-                // TODO: void Time.pause_for(sec);
+                Time.pause_for(0.1f);
                 stunTimer = 0.5f;
                 flickerTimer = 0.5f;
-                lastFlickerTime = flickerTimer;
                 onHurt.hurt(this);
             }
         }
@@ -59,9 +56,7 @@ public class Hurtable extends Component {
         stunTimer -= dt;
 
         if (flickerTimer > 0) {
-            // TODO: boolean Time.on_interval(sec)
-            if (lastFlickerTime > flickerTimer + 0.08f) {
-                lastFlickerTime = flickerTimer;
+            if (Time.on_interval(0.05f)) {
                 entity().visible = !entity().visible;
             }
 

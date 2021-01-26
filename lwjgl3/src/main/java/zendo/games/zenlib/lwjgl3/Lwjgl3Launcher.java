@@ -2,8 +2,9 @@ package zendo.games.zenlib.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import zendo.games.zenlib.App;
+import zendo.games.zenlib.TestGame;
 import zendo.games.zenlib.config.Config;
-import zendo.games.zenlib.Main;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
@@ -12,7 +13,7 @@ public class Lwjgl3Launcher {
 	}
 
 	private static Lwjgl3Application createApplication() {
-		return new Lwjgl3Application(new Main(), getDefaultConfiguration());
+		return new Lwjgl3Application(new App(new TestGame()), getDefaultConfiguration());
 	}
 
 	private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
